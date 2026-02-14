@@ -40,3 +40,8 @@ htmlcov/
 tmp/
 temp/
 *.tmp
+
+# Private submission drafts (not for public repo)
+docs/submission/*_DRAFT.md
+docs/submission/TRACTION_EVIDENCE.md
+docs/submission/SUBMISSION_RECORD.md
