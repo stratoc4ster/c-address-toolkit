@@ -34,9 +34,9 @@
 - How to measure completion: Coverage report, CI badge, all tests passing.
 - Budget: $3,000
 
-**[Deliverable 1.5] G-to-C Proxy Contract**
-- Brief description: Soroban smart contract enabling G-address deposits to route to C-addresses. Generates deterministic proxy G-addresses for each C-address. When funds arrive at proxy G-address, contract automatically forwards to destination C-address. Compatible with CEX withdrawals and any G-address-based system.
-- How to measure completion: Contract deployed on testnet, can receive funds at proxy G-address and verify arrival at C-address within 1 ledger.
+**[Deliverable 1.5] G-to-C Proxy Contract + Relayer**
+- Brief description: Soroban smart contract for deterministic proxy G-address generation, plus open-source relayer service. Contract derives keypairs from `hash(c_address + salt)`. Relayer monitors proxy addresses via Horizon streaming API and submits forwarding transactions signed with contract-derived keys. Stateless, self-hostable architecture.
+- How to measure completion: Contract deployed on testnet, relayer running, can receive funds at proxy G-address and verify arrival at C-address within 30 seconds.
 - Budget: $8,000
 
 **Tranche 1 Completion Date:** 6 weeks from approval

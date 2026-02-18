@@ -372,11 +372,13 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 
 | Concern | Response |
 |---------|----------|
-| "Active SCF project" | Development complete. T2 in review, T3 ready. Admin closeout only. |
-| "Is $120K justified?" | Includes new smart contract ($18K) + expanded wallet scope. Itemized per deliverable. |
-| "Where's the smart contract?" | Deliverable 1.5: G-to-C Proxy Contract - core innovation enabling CEX/on-ramp compatibility. |
+| "Active SCF project" | All development complete. T2 in review, T3 code ready. Only administrative closeout remains. C-Address Toolkit starts after AI Agent Kit closes—no resource overlap. |
+| "Is $120K justified?" | Includes novel smart contract ($18K) + relayer service + full-stack SDK + reference wallet. Itemized per deliverable. Below $149.7K precedent for comparable scope. |
+| "Where's the smart contract?" | Deliverable 1.5: G-to-C Proxy Contract + Relayer—core innovation enabling CEX/on-ramp compatibility without requiring those services to change. |
+| "How does auto-forwarding work?" | Hybrid architecture: Horizon streaming detects payments, relayer submits forwards signed with contract-derived keys. Open source, self-hostable. |
+| "Freighter parity realistic?" | Scoped to token display + history + send/receive. Not a full dApp browser or hardware wallet. Reference implementation, not consumer wallet replacement. |
 | "Maintenance?" | 6-month post-launch support + community handoff + contribution guide |
-| "Why you?" | Only passkey-kit contributor + completed SCF delivery + proxy contract expertise |
+| "Why you?" | Only passkey-kit contributor + completed SCF delivery ($108K, 100% on-time) + direct Smart Wallet experience |
 
 ---
 
@@ -392,3 +394,4 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 
 *Document approved: 2025-02-14*
 *Updated: 2025-02-17 - Added G-to-C Proxy Contract, increased budget to $120K*
+*Updated: 2025-02-18 - Added proxy mechanism details, Freighter parity clarification, active project overlap explanation*

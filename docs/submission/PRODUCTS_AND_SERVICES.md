@@ -1,12 +1,38 @@
 # Products & Services
 
-Current Stellar tooling assumes G-addresses for funding flows. This creates a gap: developers building with Smart Wallets and PasskeyKit cannot easily enable external deposits to C-addresses from exchanges, fiat on-ramps, or other wallets.
+Current Stellar tooling assumes G-addresses for funding flows. This creates a gap: developers building with Smart Wallets and PasskeyKit cannot easily enable external deposits to C-addresses from exchanges, fiat on-ramps, or other wallets. CEXs and on-ramps only support G-addresses—they cannot send directly to C-addresses.
 
-**G-to-C Proxy Contract:** Soroban smart contract that generates deterministic proxy G-addresses for each C-address. When funds arrive at a proxy G-address (from CEX withdrawal, on-ramp, or any G-address source), the contract automatically forwards to the destination C-address. This makes the G-address step transparent to end users and compatible with existing infrastructure.
+**G-to-C Proxy Contract + Relayer:** Soroban smart contract that generates deterministic proxy G-addresses for each C-address, plus an open-source relayer service that monitors and forwards funds.
+
+*Technical Implementation:*
+
+1. **Proxy Address Generation:** User requests proxy via SDK. Contract derives deterministic keypair from `hash(c_address + salt)`, generating a standard G-address any CEX can send to.
+
+2. **Forwarding Mechanism:** Relayer service monitors proxy addresses via Horizon streaming API. When payment detected, relayer constructs and submits forwarding transaction signed with contract-derived keypair.
+
+3. **Fee Handling:** Small forwarding fee (0.01 XLM default) covers network fees and reserve pool. Configurable; can be zero for sponsored deployments.
+
+4. **Security Model:** Proxy keypairs derived deterministically—no private key storage. Relayer is stateless and open source. Destination locked to original C-address (cannot be redirected).
+
+```
+CEX/On-ramp ──▶ Proxy G-Address ──▶ Relayer detects ──▶ Forward to C-Address
+                (holds briefly)      (via Horizon)       (within seconds)
+```
 
 **C-Address Funding SDK (TypeScript + Python):** Core library enabling direct C-address funding. Includes proxy address generation, transaction building, address resolution, and PasskeyKit integration. Published on npm and PyPI.
 
-**Reference Wallet (Next.js PWA):** Production-grade Progressive Web App with native passkey support (Face ID, Touch ID, Windows Hello). Installable on mobile home screens with app-like experience. Displays all SEP-41 tokens and transaction history (Freighter parity). TypeScript SDK compatible with React Native for teams building native mobile apps.
+**Reference Wallet (Next.js PWA):** Production-grade Progressive Web App demonstrating C-address onboarding and funding flows. Core features at Freighter parity:
+
+| Feature | Included | Not Included (Out of Scope) |
+|---------|----------|----------------------------|
+| Token balances (SEP-41) | ✅ | dApp browser/connections |
+| Transaction history | ✅ | Hardware wallet support |
+| Send/receive flows | ✅ | Multi-signature accounts |
+| Passkey auth (Face ID, Touch ID) | ✅ | Account recovery via seed phrase |
+| Mobile installable (PWA) | ✅ | Native iOS/Android apps |
+| Testnet + Mainnet | ✅ | Ledger/Trezor integration |
+
+The reference wallet demonstrates SDK capabilities—not a full consumer wallet replacement. Teams building production wallets can fork or integrate the SDK directly.
 
 **Onboarding Standards + SEP Draft:** Developer guide with integration patterns for exchanges and on-ramps, plus a proposed SEP for C-address discovery and funding protocols submitted to stellar/stellar-protocol. Includes SEP-compliant patterns for fiat on-ramp providers.
 
