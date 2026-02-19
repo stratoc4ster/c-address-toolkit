@@ -249,8 +249,9 @@ See [PROXY_CONTRACT_SPEC.md](../architecture/PROXY_CONTRACT_SPEC.md) for complet
 - Prior collaborator on SCF-funded projects with proven delivery record
 - Key contributor to SCF 37 (Stellar AI Agent Kit) — delivered 37,693 lines of code in ~2 weeks
 - **Delivery Evidence (AI Agent Kit):**
-  - Demo Video: https://www.youtube.com/watch?v=8u84duwxC-4
-  - Tranche 2 Walkthrough: https://www.youtube.com/watch?v=rEc9aKOnTeE
+  - Stellar MCP Plugin: https://www.youtube.com/watch?v=m3e7y7ToztE
+  - Stellar Policy Plugin: https://www.youtube.com/watch?v=O5qa3HGikd4
+  - Python Bindings & Full Stack Demo: https://www.youtube.com/watch?v=rEc9aKOnTeE
 - Telegram: @BlockchainOracle_dev
 
 **Dan Garcia** — Product & UX Engineer
