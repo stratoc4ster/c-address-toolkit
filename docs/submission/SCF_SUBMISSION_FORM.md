@@ -80,7 +80,11 @@ See [PROXY_CONTRACT_SPEC.md](../architecture/PROXY_CONTRACT_SPEC.md) for complet
 
 **C-Address Funding SDK (TypeScript + Python):** Core library enabling direct C-address funding. Includes proxy address generation, transaction building, address resolution, and Smart Wallet authentication integration. Published on npm and PyPI.
 
+> **Ecosystem Compatibility Note:** We're tracking the December 2025 shift toward OpenZeppelin's smart-account-kit as the recommended smart wallet standard. The SDK v1.0 will integrate with passkey-kit (production-ready, battle-tested). The architecture is designed to support future compatibility with smart-account-kit as that ecosystem matures—the proxy system and funding flows are wallet-agnostic and will work with any C-address regardless of the underlying smart wallet implementation.
+
 **Reference Wallet (Next.js PWA):** Production-grade Progressive Web App demonstrating C-address onboarding and funding flows. Core features at Freighter parity: token balances (SEP-41), transaction history, send/receive flows, passkey auth (Face ID, Touch ID), mobile installable (PWA), testnet + mainnet support.
+
+> **Cross-Device Passkey Strategy:** The reference wallet relies on platform-native passkey synchronization (iCloud Keychain for Apple devices, Google Password Manager for Android/Chrome). This is the standard approach recommended by FIDO Alliance and provides seamless cross-device access within each ecosystem. Limitations: cross-ecosystem access (e.g., iPhone to Windows) requires manual QR-code-based passkey sharing. The onboarding documentation will clearly communicate these platform boundaries and provide guidance for users with multi-platform needs. Future enhancement: support for adding multiple passkey signers to a single C-address (requires smart wallet policy configuration).
 
 **Onboarding Standards + SEP Draft:** Developer guide with integration patterns for exchanges and on-ramps, plus a proposed SEP for C-address discovery and funding protocols submitted to stellar/stellar-protocol.
 
@@ -123,6 +127,28 @@ See [PROXY_CONTRACT_SPEC.md](../architecture/PROXY_CONTRACT_SPEC.md) for complet
 | #1 | 20% | $24,000 |
 | #2 | 30% | $36,000 |
 | #3 (Mainnet launch) | 40% | $48,000 |
+
+### Budget Justification
+
+**Team Rates & Allocation:**
+
+| Role | Hourly Rate | Allocation |
+|------|-------------|------------|
+| Project Lead (Jose) | $85/hr | Architecture, PasskeyKit integration, SDF coordination, code review |
+| Backend Engineer (BlockchainOracle) | $75/hr | Soroban contracts, relayer service, SDK implementation |
+| Product/UX Engineer (Dan Garcia) | $65/hr | Wallet UI/UX, documentation, integration examples |
+
+**Per-Deliverable Breakdown (Key Items):**
+
+| Deliverable | Hours | Rate | Cost | Justification |
+|-------------|-------|------|------|---------------|
+| SDK Core (1.1) | 80 hrs | $75 + $85 | $7,000 | 60hr implementation + 20hr architecture/review |
+| Proxy Contract + Relayer (1.5) | 90 hrs | $75 | $7,000 | 50hr contract + 40hr relayer service |
+| Reference Wallet v1 (2.1) | 160 hrs | $65 + $85 | $12,000 | 120hr UI + 40hr PasskeyKit integration |
+| Python SDK (2.3) | 90 hrs | $75 | $7,000 | Port from TypeScript + testing |
+| Wallet v2 + Mainnet (3.1) | 180 hrs | $65 + $75 | $14,000 | Production hardening + monitoring |
+
+**Cost Efficiency Evidence:** SCF 37 (AI Agent Kit) delivered 37,693 lines of code in ~2 weeks at similar rates, demonstrating team velocity and cost-effectiveness.
 
 ---
 
@@ -231,6 +257,31 @@ See [PROXY_CONTRACT_SPEC.md](../architecture/PROXY_CONTRACT_SPEC.md) for complet
 - Brief description: All code open source (MIT/Apache), CONTRIBUTING.md, issue templates, maintenance runbook.
 - How to measure completion: All repositories MIT/Apache licensed with LICENSE file, CONTRIBUTING.md merged, GitHub issue templates configured, and maintenance runbook published in docs. At least one external contribution (issue or PR) triaged.
 - Budget: $4,000
+
+---
+
+## Post-Launch Maintenance Commitment
+
+**6-Month Support Period** (following Tranche 3 completion)
+
+| Issue Type | Response SLA | Resolution Target |
+|------------|--------------|-------------------|
+| **Security vulnerabilities** | < 24 hours | Patch within 48 hours |
+| **Critical bugs** (service down) | < 24 hours | Fix within 72 hours |
+| **Major bugs** (feature broken) | < 48 hours | Fix within 1 week |
+| **Minor bugs** (cosmetic/edge cases) | < 1 week | Next scheduled release |
+
+**Ongoing Commitments:**
+- **Stellar Protocol Updates:** SDK and contracts updated within 2 weeks of any breaking Stellar/Soroban changes
+- **Dependency Security:** Monthly audit of npm/PyPI dependencies; critical CVEs patched within 48 hours
+- **Community Support:** Daily monitoring of GitHub issues and Discord questions
+- **Usage Reporting:** Monthly metrics published (npm downloads, proxy transactions, active wallets)
+
+**Handoff Strategy:**
+- Complete maintenance runbook with troubleshooting guides
+- Documented on-call procedures for relayer monitoring
+- Community contributor onboarding (good-first-issue labels, contributor guide)
+- All operational knowledge transferred to public documentation
 
 ---
 

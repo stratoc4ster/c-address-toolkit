@@ -6,6 +6,30 @@
 
 ---
 
+## Table of Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Architecture Overview](#architecture-overview)
+3. [Why This Architecture](#why-this-architecture)
+4. [Component Details](#component-details)
+   - [Proxy Registry Contract](#1-proxy-registry-contract-soroban)
+   - [Key Derivation Scheme](#2-key-derivation-scheme)
+   - [Relayer Service](#3-relayer-service)
+   - [Relayer Reliability & Recovery](#4-relayer-reliability--recovery)
+   - [Master Seed Management](#5-master-seed-management)
+   - [Relayer Funding & Economics](#6-relayer-funding--economics)
+5. [Security Model](#security-model)
+   - [Threat Analysis](#threat-analysis)
+   - [Minimum Forward Threshold](#minimum-forward-threshold)
+   - [What the Relayer CANNOT Do](#what-the-relayer-cannot-do)
+   - [Fund Recovery](#fund-recovery)
+6. [Flow Diagrams](#flow-diagrams)
+7. [Implementation Checklist](#implementation-checklist)
+8. [FAQ](#faq)
+9. [Appendix: Cryptographic Details](#appendix-cryptographic-details)
+
+---
+
 ## Executive Summary
 
 This document provides a detailed technical specification for the G-to-C Proxy Contract system, addressing how the proxy enables CEX/on-ramp deposits to C-addresses without requiring those services to change.
@@ -219,7 +243,144 @@ The relayer is a stateless service that:
 
 ---
 
-### 4. Master Seed Management
+### 4. Relayer Reliability & Recovery
+
+The relayer must handle Horizon stream disconnections gracefully. Network issues, Horizon maintenance, and temporary outages are expected.
+
+**Reconnection Strategy:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      Horizon Stream Recovery Logic                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ┌──────────┐    Disconnect    ┌──────────────┐    Backoff    ┌─────────┐ │
+│   │ CONNECTED│───────────────▶│ RECONNECTING │──────────────▶│ WAITING │ │
+│   └────┬─────┘                 └──────┬───────┘               └────┬────┘ │
+│        │                              │                            │       │
+│        │ ◀──────── Success ───────────┘                            │       │
+│        │                                                           │       │
+│        │ ◀─────────────── Retry ──────────────────────────────────┘       │
+│                                                                              │
+│   Backoff Schedule:                                                         │
+│   Attempt 1: 1 second                                                       │
+│   Attempt 2: 2 seconds                                                      │
+│   Attempt 3: 4 seconds                                                      │
+│   Attempt 4: 8 seconds                                                      │
+│   Attempt 5+: 30 seconds (max)                                              │
+│                                                                              │
+│   After 10 consecutive failures: Alert + Continue retrying                  │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Implementation (TypeScript):**
+
+```typescript
+class HorizonStreamManager {
+  private cursor: string = 'now';
+  private retryCount: number = 0;
+  private readonly maxBackoff: number = 30000; // 30 seconds
+
+  async startStream(): Promise<void> {
+    while (true) {
+      try {
+        await this.connectAndListen();
+        this.retryCount = 0; // Reset on successful connection
+      } catch (error) {
+        this.retryCount++;
+        const backoff = this.calculateBackoff();
+
+        console.error(`Stream disconnected. Retry ${this.retryCount} in ${backoff}ms`, error);
+
+        if (this.retryCount >= 10) {
+          await this.sendAlert('Horizon stream: 10 consecutive failures');
+        }
+
+        await this.sleep(backoff);
+      }
+    }
+  }
+
+  private calculateBackoff(): number {
+    // Exponential backoff with jitter, capped at maxBackoff
+    const base = Math.min(1000 * Math.pow(2, this.retryCount - 1), this.maxBackoff);
+    const jitter = Math.random() * 1000; // 0-1 second jitter
+    return base + jitter;
+  }
+
+  private async connectAndListen(): Promise<void> {
+    const stream = server.payments()
+      .forAccount(proxyAddress)
+      .cursor(this.cursor)
+      .stream({
+        onmessage: (payment) => {
+          this.cursor = payment.paging_token; // Track position
+          this.handlePayment(payment);
+        },
+        onerror: (error) => {
+          throw error; // Trigger reconnection
+        }
+      });
+  }
+}
+```
+
+**Gap Detection & Catchup:**
+
+On reconnection, the relayer must check for payments that arrived during the outage:
+
+```typescript
+async function catchupMissedPayments(lastCursor: string): Promise<void> {
+  // Fetch all payments since last known cursor
+  const payments = await server.payments()
+    .forAccount(proxyAddress)
+    .cursor(lastCursor)
+    .limit(200)
+    .order('asc')
+    .call();
+
+  for (const payment of payments.records) {
+    // Check if already forwarded (idempotency)
+    if (!(await isAlreadyForwarded(payment.id))) {
+      await processPayment(payment);
+    }
+  }
+}
+```
+
+**Monitoring & Alerting:**
+
+| Metric | Alert Threshold | Action |
+|--------|-----------------|--------|
+| Stream disconnections/hour | > 10 | Page on-call |
+| Forwarding latency (p99) | > 60 seconds | Investigate |
+| Failed forwards/hour | > 5 | Page on-call |
+| Memory usage | > 80% | Scale or investigate |
+| Last successful forward | > 1 hour (with pending) | Alert |
+
+**Health Check Endpoint:**
+
+```typescript
+// GET /health
+{
+  "status": "healthy",
+  "stream": {
+    "connected": true,
+    "lastEvent": "2025-02-19T10:30:00Z",
+    "cursor": "12345678"
+  },
+  "stats": {
+    "forwardsToday": 42,
+    "failedToday": 0,
+    "avgLatencyMs": 2500
+  }
+}
+```
+
+---
+
+### 5. Master Seed Management
 
 The master seed is the only secret in the system. It must be:
 
@@ -262,6 +423,149 @@ console.log('Master seed (hex):', masterSeed.toString('hex'));
 // Store this in HSM/Secrets Manager - NEVER in code or git
 ```
 
+**Production Deployment Decision:**
+
+The hosted relayer deployment follows a phased security approach:
+
+| Phase | Environment | Security Tier |
+|-------|-------------|---------------|
+| **Testnet** | AWS Secrets Manager + Nitro Enclave | Strong (~$50/month) |
+| **Mainnet** | **AWS CloudHSM** | Maximum (FIPS 140-2 Level 3) |
+
+**Testnet (Tranche 1-2):** Option B - AWS Secrets Manager + Secure Enclave
+
+| Aspect | Implementation |
+|--------|----------------|
+| **Seed Storage** | AWS Secrets Manager with automatic rotation disabled |
+| **Runtime Environment** | AWS Nitro Enclave (isolated memory, no external access) |
+| **Access Control** | IAM role-based access, audit logging via CloudTrail |
+| **Backup** | Encrypted backup in separate AWS account with break-glass procedure |
+
+**Mainnet (Tranche 3):** Option A - HSM-backed key storage
+
+| Aspect | Implementation |
+|--------|----------------|
+| **Seed Storage** | AWS CloudHSM (FIPS 140-2 Level 3 certified) |
+| **Key Operations** | HKDF derivation occurs inside HSM—seed never leaves hardware |
+| **Access Control** | HSM partition with MFA-protected admin access |
+| **Audit** | CloudTrail + HSM audit logs for all key operations |
+| **Cost** | ~$1,500/month (justified for mainnet security) |
+
+**Rationale:**
+- Testnet: Secrets Manager + Enclave is cost-effective for development/testing
+- Mainnet: **HSM is required**—real user funds demand hardware-level security
+- The hosted mainnet relayer will use HSM-backed key storage (non-negotiable)
+- Nitro Enclaves provide attestation (cryptographic proof of what code is running)
+- Self-hosters can choose their own security tier based on their risk tolerance
+
+**Self-Hoster Guidance:**
+
+For teams running their own relayer:
+
+```yaml
+# docker-compose.yml example
+services:
+  relayer:
+    image: stellar-c-toolkit/relayer:latest
+    environment:
+      # Option 1: Environment variable (simplest, less secure)
+      - MASTER_SEED=${MASTER_SEED}
+      # Option 2: Docker secrets (recommended)
+      - MASTER_SEED_FILE=/run/secrets/master_seed
+    secrets:
+      - master_seed
+    deploy:
+      resources:
+        limits:
+          memory: 256M  # Limit memory to reduce key exposure window
+
+secrets:
+  master_seed:
+    external: true  # Created via: docker secret create master_seed ./seed.txt
+```
+
+---
+
+### 6. Relayer Funding & Economics
+
+The relayer needs XLM to pay transaction fees when forwarding payments. This section documents the funding model to ensure long-term sustainability.
+
+**The Problem:** The OpenZeppelin relayer on mainnet ran out of XLM, causing forwarding failures. We address this explicitly.
+
+**Three-Tier Funding Model:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         Relayer Funding Models                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   Tier 1: HOSTED RELAYER (Reference Implementation)                         │
+│   ┌─────────────────────────────────────────────────────────────────────┐   │
+│   │ Funding Source: Small forwarding fee deducted from each transfer    │   │
+│   │                                                                      │   │
+│   │ Fee Structure:                                                       │   │
+│   │   • Base network fee: ~0.00001 XLM (Stellar network)                │   │
+│   │   • Relayer fee: 0.01 XLM (covers operations + reserve)             │   │
+│   │   • Total deducted: ~0.01 XLM per forward                           │   │
+│   │                                                                      │   │
+│   │ Sustainability:                                                      │   │
+│   │   • 10,000 forwards = 100 XLM revenue                               │   │
+│   │   • Covers infrastructure (~$50/month) + reserve                    │   │
+│   │   • Fee is transparent and documented in SDK                        │   │
+│   └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│   Tier 2: SELF-HOSTED RELAYER                                               │
+│   ┌─────────────────────────────────────────────────────────────────────┐   │
+│   │ Funding Source: Operator funds their own relayer account            │   │
+│   │                                                                      │   │
+│   │ Requirements:                                                        │   │
+│   │   • Minimum reserve: 100 XLM recommended                            │   │
+│   │   • Operator monitors balance via health check endpoint             │   │
+│   │   • Operator sets their own fee structure (including 0 fee)         │   │
+│   │                                                                      │   │
+│   │ Use Case: Enterprises, privacy-focused users, high-volume apps      │   │
+│   └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│   Tier 3: SPONSORED RELAYER                                                  │
+│   ┌─────────────────────────────────────────────────────────────────────┐   │
+│   │ Funding Source: Protocol/dApp subsidizes forwarding for users       │   │
+│   │                                                                      │   │
+│   │ Examples:                                                            │   │
+│   │   • DEX subsidizes deposits for liquidity providers                 │   │
+│   │   • NFT platform covers fees for first-time users                   │   │
+│   │   • Gaming protocol sponsors all in-game deposits                   │   │
+│   │                                                                      │   │
+│   │ Implementation: Sponsor tops up designated relayer account          │   │
+│   └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Hosted Relayer Sustainability Measures:**
+
+| Measure | Implementation |
+|---------|----------------|
+| **Low balance alert** | Alert at < 50 XLM reserve |
+| **Critical alert** | Page on-call at < 10 XLM |
+| **Auto-pause** | Stop accepting new proxies at < 5 XLM |
+| **Reserve target** | Maintain 500 XLM minimum |
+| **Fee adjustment** | Can increase fee if costs rise (with notice) |
+
+**Fee Transparency:**
+
+The SDK will clearly document fees:
+
+```typescript
+// SDK shows fee before user confirms
+const estimate = await sdk.estimateForward(amount);
+// {
+//   grossAmount: "100.0000000",
+//   relayerFee: "0.0100000",
+//   networkFee: "0.0000100",
+//   netAmount: "99.9899900"  // What arrives at C-address
+// }
+```
+
 ---
 
 ## Security Model
@@ -275,6 +579,54 @@ console.log('Master seed (hex):', masterSeed.toString('hex'));
 | **Man-in-the-middle** | Attacker intercepts forward → Cannot modify destination (locked in registry). **Mitigation:** Destination lookup is on-chain and immutable. |
 | **Relayer unavailability** | Service goes down → Funds stuck in proxy. **Mitigation:** Multiple relayers can run with same seed. Funds are recoverable. |
 | **Registry corruption** | Wrong mapping stored → Funds sent to wrong address. **Mitigation:** Mappings are deterministic and verifiable. SDK validates before use. |
+| **Dust attack DoS** | Attacker floods proxy addresses with tiny payments → Relayer exhausts resources processing. **Mitigation:** Minimum forward threshold (see below). |
+
+### Minimum Forward Threshold
+
+To prevent denial-of-service via dust payments, the relayer enforces a minimum forward amount:
+
+**Default Configuration:**
+
+| Setting | Value | Rationale |
+|---------|-------|-----------|
+| `MIN_FORWARD_AMOUNT` | 0.5 XLM | Covers fees + prevents abuse |
+| `DUST_ACCUMULATE` | true | Accumulate dust until threshold met |
+| `DUST_ALERT_THRESHOLD` | 10 dust payments/hour | Alert on potential attack |
+
+**Configurable Per-Deployment:**
+
+Self-hosters can adjust the threshold based on their use case:
+
+```yaml
+# relayer-config.yml
+forwarding:
+  min_amount: 0.5        # Default: 0.5 XLM
+  # min_amount: 0.1      # Lower for micro-payment use cases
+  # min_amount: 5.0      # Higher for high-value-only relayer
+
+  dust_handling:
+    accumulate: true     # Hold dust until min_amount reached
+    max_accumulation: 100  # Max payments to accumulate before alert
+```
+
+**Dust Payment Handling:**
+
+When a payment below threshold is received:
+1. Payment is logged but NOT forwarded immediately
+2. Balance accumulates in proxy address
+3. When accumulated balance exceeds threshold, forward occurs
+4. User is notified via SDK that dust is accumulating
+
+```typescript
+// SDK can check accumulated dust
+const proxyStatus = await sdk.getProxyStatus(cAddress);
+// {
+//   proxyAddress: "GABCD...",
+//   pendingBalance: "0.3500000",  // Below threshold
+//   minForwardAmount: "0.5000000",
+//   status: "accumulating"
+// }
+```
 
 ### What the Relayer CANNOT Do
 

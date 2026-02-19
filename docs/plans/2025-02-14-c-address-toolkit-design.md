@@ -95,6 +95,15 @@ stellar-c-address-sdk/
 - Integrate with Smart Wallet authentication (passkeys) for seamless auth
 - TypeScript-first with Python bindings
 
+**Error Handling:** The SDK will follow Stellar SDK error patterns with typed exceptions:
+- `CAddressNotFoundError` - C-address not registered or invalid
+- `ProxyRegistrationError` - Failed to register proxy mapping
+- `ForwardingError` - Relayer failed to forward (includes retry guidance)
+- `InsufficientFundsError` - Below minimum forward threshold
+- `NetworkError` - Horizon connectivity issues
+
+Full error taxonomy will be documented during SDK development (Tranche 1).
+
 #### 3. Reference Wallet (Web App)
 
 Production-grade example implementation.
