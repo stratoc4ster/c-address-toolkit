@@ -46,22 +46,29 @@ We are a software development company specializing in blockchain infrastructure 
 
 ### Components
 
-#### 1. G-to-C Proxy Contract (NEW)
+#### 1. G-to-C Proxy System (NEW)
 
-Soroban smart contract enabling seamless G-to-C funding.
+A two-component system enabling seamless G-to-C funding.
+
+> **Technical Specification:** See [PROXY_CONTRACT_SPEC.md](../architecture/PROXY_CONTRACT_SPEC.md) for complete details.
 
 **Why Proxy?** CEXs and fiat on-ramps won't add native C-address support in the near term—it requires changes to their withdrawal systems, compliance flows, and address validation logic. The proxy approach enables C-address funding *today* without requiring any changes from external services. Users get a standard G-address they can share anywhere, while funds automatically arrive at their C-address. This is the pragmatic bridge that unlocks Smart Wallet adoption while the ecosystem matures.
 
-**How it works:**
-1. Contract generates deterministic proxy G-address for each C-address: `proxy_g = hash(c_address + salt)`
-2. User shares proxy G-address for CEX withdrawals, on-ramp deposits, etc.
-3. When funds arrive at proxy G-address, contract automatically forwards to destination C-address
-4. Memo field preserved for compliance/tracking
+**Architecture:**
+1. **Registry Contract (Soroban):** Stores ONLY the mapping `C-address → Proxy G-address`. No secrets stored.
+2. **Relayer Service:** Monitors Horizon, derives keys via HKDF, signs forwards, wipes keys from memory.
 
-**Key Features:**
-- Deterministic address generation (same C-address always maps to same proxy G-address)
-- Automatic forwarding within 1 ledger
-- Compatible with any G-address-based system (CEX, on-ramps, legacy wallets)
+**How it works:**
+1. User requests proxy address via SDK → Registry stores mapping
+2. Proxy G-address derived deterministically: `keypair = HKDF(master_seed, c_address)`
+3. User shares proxy G-address for CEX withdrawals, on-ramp deposits, etc.
+4. Relayer detects payment via Horizon streaming, derives key, signs forward, submits
+5. Funds arrive at C-address within ~30 seconds
+
+**Security Properties:**
+- No keys stored (derived on-demand, wiped after use)
+- Destination locked in registry (relayer cannot redirect)
+- Self-hostable (operators run own relayer with own seed)
 - Open source (MIT/Apache)
 
 #### 2. C-Address Funding SDK (npm + Python)

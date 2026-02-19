@@ -106,6 +106,17 @@ The proxy system enables CEXs, fiat on-ramps, and legacy wallets to fund C-addre
 
 ## Proxy Security Model
 
+> **See also:** [PROXY_CONTRACT_SPEC.md](./PROXY_CONTRACT_SPEC.md) for complete technical specification including cryptographic details and threat analysis.
+
+### Architecture Clarification
+
+The proxy system uses **deterministic key derivation** with a **stateless relayer**:
+
+1. **Registry Contract (Soroban):** Stores ONLY the mapping `C-address → Proxy G-address`. No secrets stored.
+2. **Master Seed:** A 32-byte secret held by relayer operators (in HSM for production, or self-managed).
+3. **Key Derivation:** `proxy_keypair = HKDF(master_seed, c_address, "stellar-proxy-v1")`
+4. **Relayer:** Monitors Horizon, derives keys on-demand, signs forwards, wipes keys from memory.
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           Security Architecture                             │
@@ -115,27 +126,36 @@ The proxy system enables CEXs, fiat on-ramps, and legacy wallets to fund C-addre
 │   ──────────────                        ────────────────────────            │
 │                                                                             │
 │   ┌─────────────────┐                   ┌─────────────────────────────┐    │
-│   │ Proxy Contract  │                   │     At Forward Time          │    │
-│   │ ┌─────────────┐ │    derives ───▶   │  ┌───────────────────────┐  │    │
-│   │ │   Secret    │ │                   │  │  proxy_keypair =      │  │    │
-│   │ │   Salt      │ │                   │  │  hash(c_addr + salt)  │  │    │
-│   │ └─────────────┘ │                   │  └───────────────────────┘  │    │
-│   │ ┌─────────────┐ │                   │              │              │    │
-│   │ │  C-Address  │ │                   │              ▼              │    │
-│   │ │   Mapping   │ │                   │  ┌───────────────────────┐  │    │
-│   │ └─────────────┘ │                   │  │  Signs tx, then       │  │    │
-│   └─────────────────┘                   │  │  keypair is discarded │  │    │
-│                                         │  └───────────────────────┘  │    │
-│                                         └─────────────────────────────┘    │
+│   │ Registry        │                   │     At Forward Time          │    │
+│   │ (Soroban)       │                   │                              │    │
+│   │ ┌─────────────┐ │                   │  Master Seed (held by        │    │
+│   │ │  C-Address  │ │                   │  relayer operator)           │    │
+│   │ │  → Proxy G  │ │                   │         │                    │    │
+│   │ │   Mapping   │ │                   │         ▼                    │    │
+│   │ └─────────────┘ │                   │  ┌───────────────────────┐  │    │
+│   │                 │                   │  │  proxy_keypair =      │  │    │
+│   │  NO secrets     │    derives ───▶   │  │  HKDF(seed, c_addr)   │  │    │
+│   │  stored here    │                   │  └───────────────────────┘  │    │
+│   └─────────────────┘                   │         │                    │    │
+│                                         │         ▼                    │    │
+│   ┌─────────────────┐                   │  ┌───────────────────────┐  │    │
+│   │ Relayer         │                   │  │  Sign forward tx      │  │    │
+│   │ ┌─────────────┐ │                   │  │  Submit to Horizon    │  │    │
+│   │ │ Master Seed │ │                   │  │  WIPE key from memory │  │    │
+│   │ │ (in memory  │ │                   │  └───────────────────────┘  │    │
+│   │ │  or HSM)    │ │                   │                              │    │
+│   │ └─────────────┘ │                   └─────────────────────────────┘    │
+│   └─────────────────┘                                                       │
 │                                                                             │
 │   ┌─────────────────────────────────────────────────────────────────────┐  │
 │   │                        Security Properties                           │  │
 │   ├─────────────────────────────────────────────────────────────────────┤  │
-│   │  ✓ No private keys stored anywhere (contract or relayer)            │  │
-│   │  ✓ Relayer cannot redirect funds (destination locked in contract)   │  │
+│   │  ✓ No private keys stored (derived on-demand, wiped after use)      │  │
+│   │  ✓ Relayer cannot redirect funds (destination locked in registry)   │  │
 │   │  ✓ Deterministic: same C-address always → same proxy G-address      │  │
-│   │  ✓ Open source: anyone can run their own relayer                    │  │
-│   │  ✓ Funds forwarded within 1 ledger (~5 seconds)                     │  │
+│   │  ✓ Open source: anyone can run their own relayer with their seed    │  │
+│   │  ✓ Funds forwarded within ~30 seconds end-to-end                    │  │
+│   │  ✓ Self-hostable: full control for operators who want it            │  │
 │   └─────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘

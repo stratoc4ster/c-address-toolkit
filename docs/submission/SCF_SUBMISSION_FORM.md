@@ -21,6 +21,15 @@
 
 ## Products & Services
 
+> **Important Note:** This toolkit is a *pragmatic bridge* for C-address adoption, not a replacement for native CEX support. Key clarifications:
+>
+> - **This is NOT asking CEXs to change** — The proxy approach works with existing G-address withdrawal systems. No changes required from exchanges or on-ramps.
+> - **This is NOT a consumer wallet product** — The reference wallet is a *developer demonstration*, not a Freighter competitor. It shows how to build C-address experiences.
+> - **The proxy does NOT store private keys** — Keypairs are derived on-demand within the contract's execution context and discarded after signing. No keys are ever stored or exposed.
+> - **This is developer infrastructure** — Like TypeScript binding generators or SDK libraries, this enables other developers to build C-address-first applications.
+
+---
+
 Current Stellar tooling assumes G-addresses for funding flows. This creates a gap: developers building with Smart Wallets cannot easily enable external deposits to C-addresses from exchanges, fiat on-ramps, or other wallets. CEXs and on-ramps only support G-addresses—they cannot send directly to C-addresses.
 
 **Why Proxy?** CEXs and fiat on-ramps won't add native C-address support in the near term—it requires changes to their withdrawal systems, compliance flows, and address validation logic. The proxy approach enables C-address funding *today* without requiring any changes from external services. Users get a standard G-address they can share anywhere, while funds automatically arrive at their C-address. This is the pragmatic bridge that unlocks Smart Wallet adoption while the ecosystem matures.
@@ -49,7 +58,25 @@ Current Stellar tooling assumes G-addresses for funding flows. This creates a ga
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-**G-to-C Proxy Contract + Relayer:** Soroban smart contract that generates deterministic proxy G-addresses for each C-address, plus an open-source relayer service that monitors and forwards funds. User requests proxy via SDK. Contract derives deterministic keypair from hash(c_address + contract_secret_salt), generating a standard G-address any CEX can send to. Relayer monitors proxy addresses via Horizon streaming API, constructs and submits forwarding transactions. **Security:** Proxy keypairs are derived on-demand within the contract's execution context using a contract-controlled secret—no private keys are ever stored or exposed. The relayer submits unsigned transaction templates; signing occurs inside the contract. Destination is cryptographically locked to the original C-address. Stateless, self-hostable, open source.
+**G-to-C Proxy Contract + Relayer:** A two-component system enabling CEX/on-ramp deposits to C-addresses:
+
+1. **Registry Contract (Soroban):** Stores ONLY the mapping `C-address → Proxy G-address`. No secrets, no keys, no signing logic—just a lookup table.
+
+2. **Relayer Service:** Monitors Horizon for payments to registered proxy addresses. When payment detected:
+   - Derives the proxy keypair on-demand using HKDF: `keypair = HKDF(master_seed, c_address, "stellar-proxy-v1")`
+   - Signs the forwarding transaction
+   - Submits to Horizon
+   - **Immediately wipes keypair from memory**
+
+**Security Model:**
+- **Master seed** held by relayer operator (in HSM for production, or self-managed for self-hosters)
+- **No keys stored** in contract or relayer database—derived on-demand, wiped after use
+- **Destination locked** in registry—relayer cannot redirect funds
+- **Self-hostable**: operators can run their own relayer with their own seed
+- **Deterministic**: same C-address always produces same proxy G-address (verifiable)
+- **Open source**: full audit trail, anyone can verify the code
+
+See [PROXY_CONTRACT_SPEC.md](../architecture/PROXY_CONTRACT_SPEC.md) for complete technical specification including cryptographic details, threat analysis, and implementation checklist.
 
 **C-Address Funding SDK (TypeScript + Python):** Core library enabling direct C-address funding. Includes proxy address generation, transaction building, address resolution, and Smart Wallet authentication integration. Published on npm and PyPI.
 
@@ -220,6 +247,10 @@ Current Stellar tooling assumes G-addresses for funding flows. This creates a ga
 **BlockchainOracle** — Smart Contract & Backend Engineer
 - Blockchain engineer with extensive Stellar and Soroban development experience
 - Prior collaborator on SCF-funded projects with proven delivery record
+- Key contributor to SCF 37 (Stellar AI Agent Kit) — delivered 37,693 lines of code in ~2 weeks
+- **Delivery Evidence (AI Agent Kit):**
+  - Demo Video: https://www.youtube.com/watch?v=8u84duwxC-4
+  - Tranche 2 Walkthrough: https://www.youtube.com/watch?v=rEc9aKOnTeE
 - Telegram: @BlockchainOracle_dev
 
 **Dan Garcia** — Product & UX Engineer

@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Submit a winning SCF Build Award RFP for C-Address Tooling & Onboarding ($100,000) and execute through Meridian 2025.
+**Goal:** Submit a winning SCF Build Award RFP for C-Address Tooling & Onboarding ($120,000) and execute through Meridian 2025.
 
 **Architecture:** Two-phase approach: (1) RFP submission phase to secure funding, (2) Development execution phase to deliver SDK, wallet, and documentation.
 
@@ -245,7 +245,7 @@ create the missing onboarding layer.
 - Software company with established contractor model (37K lines in 2 weeks)
 - SDF endorsement: Nick Gilbert called my work "key infrastructure"
 
-**Budget:** $100,000 over 5 months
+**Budget:** $120,000 over 5 months
 **Target:** Meridian 2025
 
 ## Problem Statement
@@ -362,27 +362,27 @@ git commit -m "docs: add technical architecture to Build Form"
 ```markdown
 ## Budget Breakdown
 
-**Total Request:** $100,000
+**Total Request:** $120,000
 
 ### By Tranche
 
 | Tranche | Amount | Focus |
 |---------|--------|-------|
-| #0 (Kickoff) | $10,000 | Upon acceptance |
-| #1 (MVP) | $20,000 | SDK Core |
-| #2 (Testnet) | $30,000 | Wallet + Docs |
-| #3 (Mainnet) | $40,000 | Production Launch |
+| #0 (Kickoff) | $12,000 | Upon acceptance |
+| #1 (MVP) | $24,000 | SDK Core |
+| #2 (Testnet) | $36,000 | Wallet + Docs |
+| #3 (Mainnet) | $48,000 | Production Launch |
 
 ### By Category
 
 | Category | Amount | % | Justification |
 |----------|--------|---|---------------|
-| SDK Development | $35,000 | 35% | TypeScript + Python, tests, CI/CD |
-| Reference Wallet | $30,000 | 30% | Next.js app, PasskeyKit integration |
-| Documentation | $15,000 | 15% | Developer guide, SEP draft, tutorials |
-| Integration Examples | $10,000 | 10% | 3 working examples with docs |
-| Infrastructure | $5,000 | 5% | Vercel, monitoring, DevOps |
-| Contingency | $5,000 | 5% | Buffer for unforeseen issues |
+| SDK Development | $42,000 | 35% | TypeScript + Python, tests, CI/CD |
+| Reference Wallet | $36,000 | 30% | Next.js app, PasskeyKit integration |
+| Documentation | $18,000 | 15% | Developer guide, SEP draft, tutorials |
+| Integration Examples | $12,000 | 10% | 3 working examples with docs |
+| Infrastructure | $6,000 | 5% | Vercel, monitoring, DevOps |
+| Contingency | $6,000 | 5% | Buffer for unforeseen issues |
 
 ### Team Allocation
 
@@ -422,7 +422,7 @@ git commit -m "docs: add budget breakdown to Build Form"
 ```markdown
 ## Tranche Deliverables
 
-### Tranche 1: SDK Core ($20,000)
+### Tranche 1: SDK Core ($24,000)
 
 **Duration:** 6 weeks
 **Focus:** Core SDK functionality
@@ -442,7 +442,7 @@ git commit -m "docs: add budget breakdown to Build Form"
 
 ---
 
-### Tranche 2: Wallet + Docs ($30,000)
+### Tranche 2: Wallet + Docs ($36,000)
 
 **Duration:** 8 weeks
 **Focus:** Reference implementation and standards
@@ -463,7 +463,7 @@ git commit -m "docs: add budget breakdown to Build Form"
 
 ---
 
-### Tranche 3: Mainnet Launch ($40,000)
+### Tranche 3: Mainnet Launch ($48,000)
 
 **Duration:** 8 weeks
 **Focus:** Production deployment and ecosystem adoption
@@ -810,7 +810,7 @@ See `docs/deliverables/TRANCHE_3.md` for detailed task breakdown.
 
 | Category | Metric | Target |
 |----------|--------|--------|
-| Funding | RFP Approved | $100K awarded |
+| Funding | RFP Approved | $120K awarded |
 | SDK | npm downloads | 500+/week by M+3 |
 | Wallet | Testnet users | 100+ MAU |
 | Standards | SEP status | Draft submitted |
