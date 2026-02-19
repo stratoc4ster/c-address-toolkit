@@ -31,10 +31,9 @@ We are a software development company specializing in blockchain infrastructure 
 
 | Evidence | Detail |
 |----------|--------|
-| Smart Wallet Experience | Strooper Wallet built at Stellar hackathon 2024 |
 | Current SCF Awardee | $108K AI Agent Kit (SCF 37) - fully delivered |
+| Smart Wallet Experience | Strooper Wallet built at Stellar hackathon 2024, PasskeyKit contributor |
 | Hackathon Track Record | 5 hackathons, 3 wins, 1 third place |
-| PasskeyKit Contributor | Open source contribution to official repo |
 
 ### Key Narrative
 
@@ -49,6 +48,8 @@ We are a software development company specializing in blockchain infrastructure 
 #### 1. G-to-C Proxy Contract (NEW)
 
 Soroban smart contract enabling seamless G-to-C funding.
+
+**Why Proxy?** CEXs and fiat on-ramps won't add native C-address support in the near term—it requires changes to their withdrawal systems, compliance flows, and address validation logic. The proxy approach enables C-address funding *today* without requiring any changes from external services. Users get a standard G-address they can share anywhere, while funds automatically arrive at their C-address. This is the pragmatic bridge that unlocks Smart Wallet adoption while the ecosystem matures.
 
 **How it works:**
 1. Contract generates deterministic proxy G-address for each C-address: `proxy_g = hash(c_address + salt)`
@@ -83,7 +84,7 @@ stellar-c-address-sdk/
 - Generate proxy G-addresses for any C-address
 - Fund C-addresses directly from any source (exchange, wallet, fiat on-ramp)
 - Resolve C-addresses to underlying contract addresses
-- Integrate with PasskeyKit for seamless auth
+- Integrate with Smart Wallet authentication (passkeys) for seamless auth
 - TypeScript-first with Python bindings
 
 #### 3. Reference Wallet (Web App)
@@ -92,7 +93,7 @@ Production-grade example implementation.
 
 **Tech Stack:**
 - Next.js + React (PWA)
-- PasskeyKit for authentication (Face ID, Touch ID, Windows Hello)
+- Passkey authentication (Face ID, Touch ID, Windows Hello)
 - Freighter/WalletConnect fallback
 - Testnet + Mainnet support
 
@@ -201,7 +202,7 @@ G-to-C Funding Flow:
 |-------------|------------------|--------|
 | C-Address Funding SDK (TypeScript) | npm package published, fund C-address | $8,000 |
 | C-Address Resolution Module | Resolve C-address → contract address | $5,000 |
-| PasskeyKit Integration | SDK works with existing passkey-kit | $4,000 |
+| Smart Wallet Auth Integration | SDK works with passkey authentication | $4,000 |
 | Unit Test Suite | 80%+ coverage, CI pipeline | $3,000 |
 | **G-to-C Proxy Contract** | **Deployed on testnet, auto-forwards funds** | **$8,000** |
 
@@ -250,7 +251,7 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 1. **Professional capacity** - Software development company, not a side project
 2. **Completed SCF delivery** - AI Agent Kit fully built, 100% on-time
 3. **New smart contract** - Proxy contract directly addresses RFP requirement
-4. **Smart Wallet expertise** - Direct experience with PasskeyKit and C-address infrastructure
+4. **Smart Wallet expertise** - Direct experience with passkey authentication and C-address infrastructure
 
 ### Key Differentiators
 
@@ -299,9 +300,9 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 
 | Risk | Mitigation |
 |------|------------|
-| Contractor availability | Existing contact from Tranche 2; backup via hackathon pool |
+| Contractor availability | Existing contacts; backup via hackathon network |
 | Scope creep | Fixed deliverables per tranche; SCF process enforces |
-| PasskeyKit changes | Direct relationship with Jane Wang; early roadmap access |
+| Smart Wallet API changes | Monitor Stellar developer channels; early roadmap access |
 | Proxy contract security | SCF audit credits; testnet validation before mainnet |
 | Timeline slip | Sequential timing after AI Agent Kit; no overlap |
 
@@ -337,7 +338,7 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 | "How does auto-forwarding work?" | Hybrid architecture: Horizon streaming detects payments, relayer submits forwards signed with contract-derived keys. Open source, self-hostable. |
 | "Freighter parity realistic?" | Scoped to token display + history + send/receive. Not a full dApp browser or hardware wallet. Reference implementation, not consumer wallet replacement. |
 | "Maintenance?" | 6-month post-launch support + community handoff + contribution guide |
-| "Why you?" | Completed SCF delivery ($108K, 100% on-time) + direct Smart Wallet experience + PasskeyKit contributor |
+| "Why you?" | Completed SCF delivery ($108K, 100% on-time) + direct Smart Wallet experience building with passkeys and C-addresses |
 
 ---
 
