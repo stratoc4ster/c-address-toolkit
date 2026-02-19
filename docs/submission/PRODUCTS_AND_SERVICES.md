@@ -12,7 +12,7 @@ Current Stellar tooling assumes G-addresses for funding flows. This creates a ga
 
 3. **Fee Handling:** Small forwarding fee (0.01 XLM default) covers network fees and reserve pool. Configurable; can be zero for sponsored deployments.
 
-4. **Security Model:** Proxy keypairs derived deterministically—no private key storage. Relayer is stateless and open source. Destination locked to original C-address (cannot be redirected).
+4. **Security Model:** Proxy keypairs are derived deterministically using a contract-controlled secret salt—only the Soroban contract can compute the private key at forwarding time. No private keys are stored; they're derived on-demand within the contract's execution context. The relayer never holds keys—it only submits unsigned transaction templates that the contract signs internally. Destination is cryptographically locked to the original C-address (cannot be redirected by anyone, including the relayer operator).
 
 ```
 CEX/On-ramp ──▶ Proxy G-Address ──▶ Relayer detects ──▶ Forward to C-Address

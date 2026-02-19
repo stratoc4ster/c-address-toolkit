@@ -7,9 +7,9 @@ RFP Submission    Month 1    Month 2    Month 3    Month 4    Month 5
      |              |          |          |          |          |
      ▼              |----------|----------|----------|----------|
 [Interest Form]    [  Tranche 1  ][    Tranche 2    ][     Tranche 3      ]
-     |                SDK Core      Wallet + Docs       Mainnet Launch
-     ▼                                                        ↓
-[Build Form]                                            Meridian 2025
+     |              SDK + Proxy    Wallet + Standards   Mainnet Launch
+     ▼
+[Build Form]
      |
      ▼
 [Approval]
@@ -40,11 +40,11 @@ RFP Submission    Month 1    Month 2    Month 3    Month 4    Month 5
 
 ---
 
-## Tranche 1: SDK Core
+## Tranche 1: SDK Core + Proxy
 
-**Budget:** $20,000
+**Budget:** $24,000
 **Duration:** ~6 weeks
-**Team:** Jose + Contractor 1
+**Team:** Jose + BlockchainOracle
 
 ### Milestones
 
@@ -52,114 +52,116 @@ RFP Submission    Month 1    Month 2    Month 3    Month 4    Month 5
 |------|-----------|
 | 1 | Project setup, contractor onboarding |
 | 2 | C-Address resolution module |
-| 3 | Direct funding module |
-| 4 | PasskeyKit integration |
-| 5 | Testing, documentation |
+| 3 | Direct funding module + Smart Wallet auth |
+| 4 | G-to-C Proxy Contract development |
+| 5 | Relayer service + Testing |
 | 6 | npm publish, submission prep |
 
 ### Deliverables
 
-| Deliverable | Success Criteria | Status |
+| Deliverable | Success Criteria | Budget |
 |-------------|------------------|--------|
-| C-Address Funding SDK (TypeScript) | npm package published | Not started |
-| C-Address Resolution Module | Resolve C-address → contract | Not started |
-| PasskeyKit Integration | SDK works with passkey-kit | Not started |
-| Unit Test Suite | 80%+ coverage | Not started |
-| Basic Documentation | README + API reference | Not started |
+| C-Address Funding SDK (TypeScript) | npm package published | $7,000 |
+| C-Address Resolution & Discovery Module | <500ms resolution | $4,000 |
+| Smart Wallet Authentication Layer | Integration tests passing | $3,000 |
+| Test Suite + CI/CD | 80%+ coverage | $3,000 |
+| G-to-C Proxy Contract + Relayer | Deployed on testnet, <30s forwarding | $7,000 |
 
 ### Checkpoint
 
 - [ ] SDK installs and runs locally
 - [ ] Can resolve a C-address on testnet
 - [ ] Can fund a C-address on testnet
+- [ ] Proxy contract deployed, relayer running
 - [ ] Tests pass in CI
 - [ ] Documentation reviewed
 
 ---
 
-## Tranche 2: Wallet + Docs
+## Tranche 2: Wallet + Standards
 
-**Budget:** $30,000
+**Budget:** $36,000
 **Duration:** ~8 weeks
-**Team:** Jose + Contractor 1 + Contractor 2
+**Team:** Jose + BlockchainOracle + Dan Garcia
 
 ### Milestones
 
 | Week | Milestone |
 |------|-----------|
-| 1-2 | Python bindings development |
-| 2-3 | Wallet UI scaffolding |
-| 4-5 | Onboarding flow implementation |
-| 5-6 | Funding flow implementation |
-| 6-7 | Standards documentation |
-| 7-8 | SEP draft, demo video |
+| 1-2 | Reference Wallet v1 scaffolding |
+| 2-3 | Passkey onboarding + C-address display |
+| 3-4 | Token display + transaction history |
+| 4-5 | Python SDK bindings |
+| 5-6 | Onboarding Standards documentation |
+| 6-7 | SEP draft + ecosystem wallet outreach |
+| 7-8 | Feedback incorporation, submission prep |
 
 ### Deliverables
 
-| Deliverable | Success Criteria | Status |
+| Deliverable | Success Criteria | Budget |
 |-------------|------------------|--------|
-| Reference Wallet v1 (Testnet) | Working onboard/fund/transact | Not started |
-| Python SDK Bindings | PyPI package published | Not started |
-| Onboarding Standards Doc v1 | Developer guide + patterns | Not started |
-| SEP Draft | Submitted to stellar/stellar-protocol | Not started |
-| Demo Video | End-to-end flow recorded | Not started |
+| Reference Wallet v1 (Testnet) | Deployed to Vercel, passkey onboarding works | $12,000 |
+| Token Display + Transaction History | SEP-41 tokens, tx history visible | $6,000 |
+| Python SDK Bindings | Published on PyPI | $7,000 |
+| Onboarding Standards Documentation | Developer guide deployed | $5,000 |
+| SEP Draft (C-Address Discovery/Funding) | PR submitted to stellar/stellar-protocol | $4,000 |
+| Ecosystem Wallet Feedback | Feedback from 2+ wallet teams documented | $2,000 |
 
 ### Checkpoint
 
 - [ ] Wallet deploys to Vercel staging
 - [ ] Can create passkey wallet and receive C-address
-- [ ] Can fund C-address from external source
+- [ ] Can fund C-address via proxy from external source
+- [ ] Token balances and tx history display correctly
 - [ ] Python SDK installs and works
 - [ ] SEP draft submitted as PR
+- [ ] Feedback from at least 2 wallet teams incorporated
 
 ---
 
 ## Tranche 3: Mainnet Launch
 
-**Budget:** $40,000
+**Budget:** $48,000
 **Duration:** ~8 weeks
-**Team:** Jose + Contractor 1 + Contractor 2
+**Team:** Jose + BlockchainOracle + Dan Garcia
 
 ### Milestones
 
 | Week | Milestone |
 |------|-----------|
-| 1-2 | Mainnet preparation, security review |
-| 2-3 | Integration example: Exchange |
-| 3-4 | Integration example: Fiat on-ramp |
-| 4-5 | Integration example: AI Agent |
-| 5-6 | Final documentation |
-| 6-7 | Production deployment |
-| 7-8 | Community handoff, Meridian prep |
+| 1-2 | Mainnet preparation, security review via SCF audit credits |
+| 2-3 | Reference Wallet v2 production deployment |
+| 3-4 | G-to-C Funding Flows + On-ramp Integration Guide |
+| 4-5 | Integration examples (exchange, fiat, AI agent) |
+| 5-6 | Multi-wallet sign-in, final documentation |
+| 6-7 | SDK v1.0 stable release |
+| 7-8 | Community handoff, open source finalization |
 
 ### Deliverables
 
-| Deliverable | Success Criteria | Status |
+| Deliverable | Success Criteria | Budget |
 |-------------|------------------|--------|
-| Reference Wallet v2 (Mainnet) | Production with monitoring | Not started |
-| Integration Examples (3+) | Exchange, fiat, AI agent | Not started |
-| Final Documentation | Complete developer portal | Not started |
-| SDK v1.0 Stable | TS + Python stable releases | Not started |
-| Migration Guide | G-address → C-address path | Not started |
-| Community Handoff Plan | Maintenance docs, contrib guide | Not started |
+| Reference Wallet v2 (Mainnet) | Production with Sentry + monitoring | $14,000 |
+| G-to-C Funding Flows + On-ramp Integration Guide | CEX→proxy→C-address demo on mainnet | $10,000 |
+| Integration Examples (3+) | Exchange, fiat on-ramp, AI agent repos | $6,000 |
+| SDK v1.0 Stable | v1.0.0 on npm + PyPI | $4,000 |
+| Developer Portal + Final Documentation | Complete docs site with search | $6,000 |
+| Multi-Wallet Sign-in | Metamask/Phantom/Rabby integration | $4,000 |
+| Open Source + Community Handoff | MIT license, CONTRIBUTING.md, maintenance runbook | $4,000 |
 
 ### Checkpoint
 
-- [ ] Wallet live on mainnet
-- [ ] All 3 integration examples working
-- [ ] Documentation site deployed
+- [ ] Wallet live on mainnet with real transactions
+- [ ] Proxy contract deployed to mainnet
+- [ ] All 3 integration examples working with docs
+- [ ] Documentation site deployed with search
 - [ ] SDK v1.0.0 tagged and released
+- [ ] Multi-wallet sign-in working
 - [ ] Contribution guide published
 
 ---
 
 ## Post-Launch
-
-### Meridian 2025 Presentation
-
-- [ ] Prepare demo
-- [ ] Prepare slides
-- [ ] Coordinate with SDF
 
 ### Maintenance Commitment (6 months)
 

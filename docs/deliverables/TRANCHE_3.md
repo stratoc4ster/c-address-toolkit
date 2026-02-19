@@ -1,8 +1,9 @@
 # Tranche 3: Mainnet Launch
 
-**Budget:** $40,000
+**Budget:** $48,000
 **Focus:** Production release and ecosystem adoption
 **Duration:** ~8 weeks
+**Completion Date:** 15/03/2027
 
 ---
 
@@ -11,23 +12,24 @@
 | Role | Person | Allocation |
 |------|--------|------------|
 | Project Lead | Jose Toscano | Coordination, community, final review |
-| SDK Developer | Contractor 1 | SDK stabilization, integration examples |
-| Frontend Developer | Contractor 2 | Wallet polish, production infra |
+| Smart Contract & Backend | BlockchainOracle | SDK stabilization, integration examples |
+| Product & UX | Dan Garcia | Wallet polish, production infra |
 
 ---
 
 ## Deliverables
 
-### 1. Reference Wallet v2 (Mainnet)
+### 1. Reference Wallet v2 (Mainnet) — $14,000
 
-**Success Criteria:** Production deployment with monitoring
+**Success Criteria:** Live on mainnet, real transactions working, monitoring dashboard active
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Security review | Not started | |
+| Security review (via SCF audit credits) | Not started | |
 | Mainnet configuration | Not started | |
+| Proxy contract mainnet deployment | Not started | |
 | Error tracking (Sentry) | Not started | |
-| Analytics | Not started | |
+| Analytics setup | Not started | |
 | Performance optimization | Not started | |
 | Production deployment | Not started | |
 | Uptime monitoring | Not started | |
@@ -36,64 +38,67 @@
 - [ ] Production URL
 - [ ] Monitoring dashboard screenshot
 - [ ] Security review notes
+- [ ] Proxy contract mainnet address
 
 ---
 
-### 2. Integration Examples (3+)
+### 2. G-to-C Funding Flows + On-ramp Integration Guide — $10,000
 
-**Success Criteria:** Exchange, fiat on-ramp, AI agent examples working
+**Success Criteria:** Integration guide published, working demo of CEX withdrawal → proxy → C-address flow on mainnet
+
+| Task | Status | Notes |
+|------|--------|-------|
+| End-to-end CEX withdrawal documentation | Not started | |
+| Fiat on-ramp integration patterns | Not started | |
+| SEP-compliant patterns for on-ramp providers | Not started | |
+| Webhook handling reference | Not started | |
+| Compliance considerations documentation | Not started | |
+| Working mainnet demo | Not started | |
+
+**Evidence Required:**
+- [ ] Integration guide published
+- [ ] Video demo: CEX → proxy → C-address on mainnet
+
+---
+
+### 3. Integration Examples (3+) — $6,000
+
+**Success Criteria:** 3 example repos with READMEs and demo videos
 
 #### Exchange Integration
 | Task | Status | Notes |
 |------|--------|-------|
 | Simulated deposit flow | Not started | |
-| Withdrawal to C-address | Not started | |
-| Documentation | Not started | |
+| Withdrawal to C-address via proxy | Not started | |
+| Documentation + README | Not started | |
+| Demo video | Not started | |
 
 #### Fiat On-ramp Integration
 | Task | Status | Notes |
 |------|--------|-------|
-| Onramp flow example | Not started | |
+| On-ramp flow example | Not started | |
 | Webhook handling | Not started | |
-| Documentation | Not started | |
+| Documentation + README | Not started | |
+| Demo video | Not started | |
 
 #### AI Agent Integration
 | Task | Status | Notes |
 |------|--------|-------|
-| MCP integration | Not started | |
+| MCP integration example | Not started | |
 | Agent funding flow | Not started | |
-| Documentation | Not started | |
+| Documentation + README | Not started | |
+| Demo video | Not started | |
 
 **Evidence Required:**
-- [ ] Working example repos (3)
+- [ ] 3 working example repos
 - [ ] README for each
 - [ ] Demo videos for each
 
 ---
 
-### 3. Final Documentation
+### 4. SDK v1.0 Stable — $4,000
 
-**Success Criteria:** Complete developer portal
-
-| Task | Status | Notes |
-|------|--------|-------|
-| Documentation site setup | Not started | |
-| SDK reference (complete) | Not started | |
-| Wallet architecture docs | Not started | |
-| Tutorial series | Not started | |
-| FAQ | Not started | |
-| Changelog | Not started | |
-
-**Evidence Required:**
-- [ ] Documentation site URL
-- [ ] All sections complete
-- [ ] Search functionality working
-
----
-
-### 4. SDK v1.0 Stable
-
-**Success Criteria:** TypeScript + Python stable releases
+**Success Criteria:** v1.0.0 published on npm and PyPI
 
 | Task | Status | Notes |
 |------|--------|-------|
@@ -101,6 +106,7 @@
 | Breaking change audit | Not started | |
 | Version bump to 1.0.0 | Not started | |
 | Release notes | Not started | |
+| Migration guide from beta | Not started | |
 | npm publish (1.0.0) | Not started | |
 | PyPI publish (1.0.0) | Not started | |
 
@@ -111,41 +117,65 @@
 
 ---
 
-### 5. Migration Guide
+### 5. Developer Portal + Final Documentation — $6,000
 
-**Success Criteria:** G-address → C-address upgrade path documented
+**Success Criteria:** Site deployed with search, all sections complete
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Migration scenarios | Not started | |
-| Step-by-step guide | Not started | |
-| Code examples | Not started | |
-| Rollback procedures | Not started | |
-| Testing checklist | Not started | |
+| Documentation site finalization | Not started | |
+| SDK reference (complete) | Not started | |
+| Wallet architecture docs | Not started | |
+| Proxy contract documentation | Not started | |
+| Tutorial series | Not started | |
+| FAQ | Not started | |
+| Search functionality | Not started | |
 
 **Evidence Required:**
-- [ ] Migration guide URL
-- [ ] Tested migration example
+- [ ] Documentation site URL
+- [ ] All sections complete
+- [ ] Search functionality working
 
 ---
 
-### 6. Community Handoff Plan
+### 6. Multi-Wallet Sign-in — $4,000
 
-**Success Criteria:** Maintenance documentation, contribution guide
+**Success Criteria:** At least one external wallet integration (Metamask, Phantom, or Rabby) working in reference wallet with documented integration guide
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Contribution guide | Not started | |
+| Wallet connection research | Not started | |
+| Metamask OR Phantom OR Rabby integration | Not started | |
+| Stellar address derivation from signature | Not started | |
+| C-address funding flow from external wallet | Not started | |
+| Integration guide documentation | Not started | |
+
+**Evidence Required:**
+- [ ] Working integration in reference wallet
+- [ ] Integration guide
+
+---
+
+### 7. Open Source + Community Handoff — $4,000
+
+**Success Criteria:** All repositories MIT/Apache licensed with LICENSE file, CONTRIBUTING.md merged, GitHub issue templates configured, and maintenance runbook published in docs. At least one external contribution (issue or PR) triaged.
+
+| Task | Status | Notes |
+|------|--------|-------|
+| License finalized (MIT/Apache) | Not started | |
+| CONTRIBUTING.md | Not started | |
 | Issue templates | Not started | |
 | PR templates | Not started | |
 | Maintenance runbook | Not started | |
 | Support channels documented | Not started | |
-| License finalized | Not started | |
+| Triage at least one external contribution | Not started | |
 
 **Evidence Required:**
+- [ ] LICENSE file in all repos
 - [ ] CONTRIBUTING.md
 - [ ] Issue/PR templates in repo
 - [ ] Maintenance runbook link
+- [ ] Evidence of external contribution triaged
 
 ---
 
@@ -154,12 +184,14 @@
 Before submitting Tranche 3 for review:
 
 - [ ] Wallet live on mainnet with real transactions
-- [ ] All 3 integration examples have working code + docs
-- [ ] Documentation site fully deployed
+- [ ] Proxy contract deployed to mainnet
+- [ ] All 3 integration examples have working code + docs + videos
+- [ ] G-to-C funding flow demonstrated on mainnet
+- [ ] Documentation site fully deployed with search
 - [ ] SDK v1.0.0 released on npm and PyPI
-- [ ] Migration guide tested end-to-end
+- [ ] Multi-wallet sign-in working
 - [ ] Contribution guide reviewed
-- [ ] Handoff meeting scheduled with interested community members
+- [ ] At least one external contribution triaged
 
 ---
 
@@ -173,12 +205,6 @@ Before submitting Tranche 3 for review:
 | Security patches | 24 hours |
 | Community support | Daily Discord check |
 | Usage reports | Monthly |
-
-### Meridian 2025
-
-- [ ] Demo prepared
-- [ ] Slides prepared
-- [ ] Booth/session coordinated with SDF
 
 ---
 

@@ -3,27 +3,142 @@
 ## System Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    C-Address Toolkit                     │
-├─────────────────────────────────────────────────────────┤
-│                                                          │
-│  ┌──────────────┐    ┌──────────────┐    ┌───────────┐  │
-│  │   SDK (TS)   │    │  SDK (Python)│    │  Docs/SEP │  │
-│  └──────┬───────┘    └──────┬───────┘    └───────────┘  │
-│         │                   │                            │
-│         └─────────┬─────────┘                            │
-│                   ▼                                      │
-│         ┌─────────────────┐                              │
-│         │ Reference Wallet │                             │
-│         │   (Next.js PWA)  │                             │
-│         └────────┬────────┘                              │
-│                  │                                       │
-├──────────────────┼───────────────────────────────────────┤
-│                  ▼           Stellar Infrastructure      │
-│  ┌────────────┐  ┌────────────┐  ┌───────────────────┐  │
-│  │ PasskeyKit │  │Smart Wallet│  │ Soroban Contracts │  │
-│  └────────────┘  └────────────┘  └───────────────────┘  │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                            C-Address Toolkit                                  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│   ┌──────────────┐    ┌──────────────┐    ┌───────────┐    ┌─────────────┐  │
+│   │   SDK (TS)   │    │ SDK (Python) │    │  Docs/SEP │    │  Relayer    │  │
+│   └──────┬───────┘    └──────┬───────┘    └───────────┘    │  Service    │  │
+│          │                   │                              └──────┬──────┘  │
+│          └─────────┬─────────┘                                     │         │
+│                    ▼                                               │         │
+│          ┌─────────────────┐                                       │         │
+│          │ Reference Wallet │                                      │         │
+│          │   (Next.js PWA)  │                                      │         │
+│          └────────┬────────┘                                       │         │
+│                   │                                                │         │
+├───────────────────┼────────────────────────────────────────────────┼─────────┤
+│                   ▼              Stellar Infrastructure            ▼         │
+│                                                                               │
+│   ┌────────────┐  ┌────────────┐  ┌───────────────┐  ┌──────────────────┐   │
+│   │ PasskeyKit │  │Smart Wallet│  │ G-to-C Proxy  │  │ Horizon Streaming│   │
+│   │            │  │            │  │   Contract    │  │       API        │   │
+│   └─────┬──────┘  └─────┬──────┘  └───────┬───────┘  └────────┬─────────┘   │
+│         │               │                 │                    │             │
+│         └───────────────┴─────────────────┴────────────────────┘             │
+│                                   │                                          │
+│                                   ▼                                          │
+│                         ┌──────────────────┐                                 │
+│                         │  Soroban/Stellar │                                 │
+│                         │     Network      │                                 │
+│                         └──────────────────┘                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## G-to-C Proxy Flow
+
+The proxy system enables CEXs, fiat on-ramps, and legacy wallets to fund C-addresses without any changes on their end.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              G-to-C Proxy Flow                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│    ┌─────────────┐                                                          │
+│    │    User     │                                                          │
+│    │  (C-Addr)   │                                                          │
+│    └──────┬──────┘                                                          │
+│           │ 1. Request proxy address                                        │
+│           ▼                                                                 │
+│    ┌─────────────┐      ┌─────────────────────────────────────────────┐    │
+│    │     SDK     │─────▶│  Proxy Contract                             │    │
+│    └─────────────┘      │  ┌─────────────────────────────────────┐   │    │
+│                         │  │ proxy_g = hash(c_address + secret)  │   │    │
+│                         │  └─────────────────────────────────────┘   │    │
+│                         └──────────────────────┬──────────────────────┘    │
+│                                                │                            │
+│           ┌────────────────────────────────────┘                            │
+│           │ 2. Returns deterministic G-address                              │
+│           ▼                                                                 │
+│    ┌─────────────┐                                                          │
+│    │  Proxy G    │◀──── User shares this address                            │
+│    │  Address    │      (looks like normal G-address)                       │
+│    └──────┬──────┘                                                          │
+│           │                                                                 │
+│           │ 3. CEX/On-ramp sends funds                                      │
+│           │    (standard Stellar payment)                                   │
+│           ▼                                                                 │
+│    ┌─────────────┐      ┌─────────────────────────────────────────────┐    │
+│    │   Horizon   │─────▶│  Relayer Service                            │    │
+│    │  Streaming  │      │  • Monitors proxy addresses                 │    │
+│    │     API     │      │  • Detects incoming payments                │    │
+│    └─────────────┘      │  • Stateless (no key storage)               │    │
+│                         └──────────────────────┬──────────────────────┘    │
+│                                                │                            │
+│           ┌────────────────────────────────────┘                            │
+│           │ 4. Relayer submits forward request                              │
+│           ▼                                                                 │
+│    ┌─────────────────────────────────────────────────────────────────┐     │
+│    │  Proxy Contract                                                  │     │
+│    │  ┌───────────────────────────────────────────────────────────┐  │     │
+│    │  │ • Derives keypair on-demand (no storage)                  │  │     │
+│    │  │ • Signs forwarding transaction inside contract context    │  │     │
+│    │  │ • Destination locked to original C-address                │  │     │
+│    │  └───────────────────────────────────────────────────────────┘  │     │
+│    └──────────────────────────────┬──────────────────────────────────┘     │
+│                                   │                                         │
+│           ┌───────────────────────┘                                         │
+│           │ 5. Funds arrive at C-address                                    │
+│           │    (< 30 seconds end-to-end)                                    │
+│           ▼                                                                 │
+│    ┌─────────────┐                                                          │
+│    │  C-Address  │                                                          │
+│    │   Wallet    │                                                          │
+│    └─────────────┘                                                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Proxy Security Model
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Security Architecture                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   WHAT'S STORED                         WHAT'S DERIVED ON-DEMAND            │
+│   ──────────────                        ────────────────────────            │
+│                                                                             │
+│   ┌─────────────────┐                   ┌─────────────────────────────┐    │
+│   │ Proxy Contract  │                   │     At Forward Time          │    │
+│   │ ┌─────────────┐ │    derives ───▶   │  ┌───────────────────────┐  │    │
+│   │ │   Secret    │ │                   │  │  proxy_keypair =      │  │    │
+│   │ │   Salt      │ │                   │  │  hash(c_addr + salt)  │  │    │
+│   │ └─────────────┘ │                   │  └───────────────────────┘  │    │
+│   │ ┌─────────────┐ │                   │              │              │    │
+│   │ │  C-Address  │ │                   │              ▼              │    │
+│   │ │   Mapping   │ │                   │  ┌───────────────────────┐  │    │
+│   │ └─────────────┘ │                   │  │  Signs tx, then       │  │    │
+│   └─────────────────┘                   │  │  keypair is discarded │  │    │
+│                                         │  └───────────────────────┘  │    │
+│                                         └─────────────────────────────┘    │
+│                                                                             │
+│   ┌─────────────────────────────────────────────────────────────────────┐  │
+│   │                        Security Properties                           │  │
+│   ├─────────────────────────────────────────────────────────────────────┤  │
+│   │  ✓ No private keys stored anywhere (contract or relayer)            │  │
+│   │  ✓ Relayer cannot redirect funds (destination locked in contract)   │  │
+│   │  ✓ Deterministic: same C-address always → same proxy G-address      │  │
+│   │  ✓ Open source: anyone can run their own relayer                    │  │
+│   │  ✓ Funds forwarded within 1 ledger (~5 seconds)                     │  │
+│   └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -108,7 +223,78 @@ packages/python/
 
 ---
 
-### 2. Reference Wallet
+### 2. G-to-C Proxy Contract + Relayer
+
+#### Proxy Contract (Soroban)
+
+```
+contracts/proxy/
+├── src/
+│   ├── lib.rs              # Contract entry point
+│   ├── proxy.rs            # Proxy address generation
+│   ├── forward.rs          # Forwarding logic
+│   └── types.rs            # Data structures
+├── tests/
+│   └── integration.rs      # E2E tests
+└── Cargo.toml
+```
+
+**Contract Interface:**
+
+```rust
+// Generate deterministic proxy G-address for a C-address
+fn get_proxy_address(env: Env, c_address: Address) -> Address;
+
+// Forward funds from proxy to destination C-address
+// Called by relayer, signed internally by contract
+fn forward(env: Env, proxy_address: Address, amount: i128, asset: Address);
+
+// Register a new C-address → proxy mapping
+fn register(env: Env, c_address: Address) -> Address;
+```
+
+#### Relayer Service
+
+```
+services/relayer/
+├── src/
+│   ├── main.ts             # Entry point
+│   ├── monitor.ts          # Horizon streaming listener
+│   ├── forwarder.ts        # Transaction builder
+│   └── config.ts           # Configuration
+├── Dockerfile
+├── docker-compose.yml      # Self-hosting setup
+└── README.md
+```
+
+**Relayer Architecture:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      Relayer Service                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   ┌──────────────┐     ┌──────────────┐     ┌──────────────┐   │
+│   │   Horizon    │────▶│   Monitor    │────▶│  Forwarder   │   │
+│   │   Stream     │     │   Service    │     │   Service    │   │
+│   └──────────────┘     └──────────────┘     └──────┬───────┘   │
+│                                                     │           │
+│   • Subscribes to         • Filters for            │           │
+│     payment events          registered proxies     │           │
+│   • Real-time updates     • Validates amounts      ▼           │
+│                                              ┌──────────────┐   │
+│                                              │    Proxy     │   │
+│                                              │   Contract   │   │
+│                                              └──────────────┘   │
+│                                                                  │
+│   Stateless: No database, no key storage, restarts safely       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 3. Reference Wallet
 
 **Tech Stack:**
 - Next.js 14 (App Router)
@@ -165,7 +351,7 @@ apps/wallet/
 
 ---
 
-### 3. Onboarding Standards
+### 4. Onboarding Standards
 
 ```
 docs/standards/
@@ -183,7 +369,7 @@ docs/standards/
 
 ---
 
-### 4. Integration Examples
+### 5. Integration Examples
 
 ```
 examples/
@@ -282,3 +468,86 @@ examples/
 | Wallet Initial Load | < 2s |
 | Transaction Submit | < 5s |
 | C-Address Resolution | < 500ms |
+| Proxy Forward Time | < 30s |
+
+---
+
+## User Journey
+
+### New User Onboarding + First Funding
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        Complete User Journey                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ONBOARDING (No seed phrase, no G-address)                                  │
+│  ─────────────────────────────────────────                                  │
+│                                                                              │
+│  ┌─────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐      │
+│  │  Visit  │───▶│   Create    │───▶│  Register   │───▶│  Receive    │      │
+│  │  Wallet │    │  Username   │    │   Passkey   │    │  C-Address  │      │
+│  └─────────┘    └─────────────┘    │ (Face ID /  │    └──────┬──────┘      │
+│                                     │  Touch ID)  │           │             │
+│                                     └─────────────┘           │             │
+│                                                               │             │
+│  FUNDING (CEX withdrawal example)                             │             │
+│  ────────────────────────────────                             │             │
+│                                                               ▼             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────┐     │
+│  │   Request   │───▶│   Receive   │───▶│   Copy to   │───▶│  Funds  │     │
+│  │   Proxy     │    │   Proxy G   │    │    CEX      │    │  Arrive │     │
+│  │  Address    │    │   Address   │    │  Withdrawal │    │ (< 30s) │     │
+│  └─────────────┘    └─────────────┘    └─────────────┘    └─────────┘     │
+│                                                                              │
+│  TRANSACTING                                                                │
+│  ───────────                                                                │
+│                                                                              │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │
+│  │   Select    │───▶│   Enter     │───▶│   Confirm   │───▶│   Done!     │  │
+│  │   "Send"    │    │  Recipient  │    │    with     │    │  Tx on      │  │
+│  │             │    │  + Amount   │    │   Passkey   │    │  Explorer   │  │
+│  └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘  │
+│                                                                              │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │                         Key UX Benefits                                │  │
+│  ├───────────────────────────────────────────────────────────────────────┤  │
+│  │  ✓ No seed phrase to write down or lose                               │  │
+│  │  ✓ No browser extension required                                      │  │
+│  │  ✓ Works with any CEX (they just see a normal G-address)              │  │
+│  │  ✓ Biometric authentication (Face ID, Touch ID, Windows Hello)        │  │
+│  │  ✓ Mobile-first PWA (installable, works offline)                      │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## SDK Integration Example
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    Developer Integration Flow                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   // 1. Install SDK                                                         │
+│   npm install @stellar/c-address-sdk                                        │
+│                                                                              │
+│   // 2. Create wallet with passkey                                          │
+│   const { cAddress, wallet } = await createPasskeyWallet("alice");          │
+│                                                                              │
+│   // 3. Get proxy address for CEX deposits                                  │
+│   const proxyAddress = await getProxyAddress(cAddress);                     │
+│   // → Returns G-address like "GABCD..." that any CEX can send to           │
+│                                                                              │
+│   // 4. Fund directly (if source supports C-addresses)                      │
+│   await fundCAddress(cAddress, "100", Asset.native(), sourceKeypair);       │
+│                                                                              │
+│   // 5. Sign transaction with passkey                                       │
+│   const tx = await buildTransaction(...);                                   │
+│   const signed = await wallet.sign(tx);  // Triggers Face ID / Touch ID    │
+│   await submitTransaction(signed);                                          │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```

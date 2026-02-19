@@ -31,8 +31,9 @@ We are a software development company specializing in blockchain infrastructure 
 
 | Evidence | Detail |
 |----------|--------|
-| Current SCF Awardee | $108K AI Agent Kit (SCF 37) - fully delivered |
-| Smart Wallet Experience | Strooper Wallet built at Stellar hackathon 2024, PasskeyKit contributor |
+| Current SCF Awardee | SCF 37 - CLI plugins for Soroban→MCP + Smart Wallet policy signer POC |
+| C-Address Experience | 1+ year building with Smart Wallets and C-addresses |
+| Smart Wallet Experience | Strooper Wallet (Meridian 2024), PasskeyKit contributor |
 | Hackathon Track Record | 5 hackathons, 3 wins, 1 third place |
 
 ### Key Narrative
@@ -176,58 +177,46 @@ G-to-C Funding Flow:
 | Tranche | Payment | Amount | Focus |
 |---------|---------|--------|-------|
 | #0 | 10% | $12,000 | Upon acceptance |
-| #1 | 23% | $28,000 | SDK Core + Proxy Contract |
-| #2 | 30% | $36,000 | Testnet - Wallet + Docs |
-| #3 | 37% | $44,000 | Mainnet - Polish + Launch |
-
-### Budget by Category
-
-| Category | Amount | % |
-|----------|--------|---|
-| G-to-C Proxy Contract | $18,000 | 15% |
-| SDK Development (TS + Python) | $35,000 | 29% |
-| Reference Wallet | $32,000 | 27% |
-| Documentation + SEP | $15,000 | 13% |
-| Integration Examples | $10,000 | 8% |
-| Infrastructure + DevOps | $5,000 | 4% |
-| Contingency | $5,000 | 4% |
+| #1 | 20% | $24,000 | SDK Core + Proxy Contract |
+| #2 | 30% | $36,000 | Testnet - Wallet + Standards |
+| #3 | 40% | $48,000 | Mainnet - Launch + Integrations |
 
 ---
 
 ## Tranche Deliverables
 
-### Tranche 1: SDK Core + Proxy ($28,000)
+### Tranche 1: SDK Core + Proxy ($24,000)
 
 | Deliverable | Success Criteria | Budget |
 |-------------|------------------|--------|
-| C-Address Funding SDK (TypeScript) | npm package published, fund C-address | $8,000 |
-| C-Address Resolution Module | Resolve C-address → contract address | $5,000 |
-| Smart Wallet Auth Integration | SDK works with passkey authentication | $4,000 |
-| Unit Test Suite | 80%+ coverage, CI pipeline | $3,000 |
-| **G-to-C Proxy Contract** | **Deployed on testnet, auto-forwards funds** | **$8,000** |
+| C-Address Funding SDK (TypeScript) | npm package published, fund C-address | $7,000 |
+| C-Address Resolution & Discovery Module | <500ms resolution on testnet | $4,000 |
+| Smart Wallet Authentication Layer | Integration tests passing | $3,000 |
+| Test Suite + CI/CD | 80%+ coverage, CI pipeline | $3,000 |
+| **G-to-C Proxy Contract + Relayer** | **Deployed on testnet, <30s forwarding** | **$7,000** |
 
-### Tranche 2: Wallet + Docs ($36,000)
+### Tranche 2: Wallet + Standards ($36,000)
 
 | Deliverable | Success Criteria | Budget |
 |-------------|------------------|--------|
-| Reference Wallet v1 (Testnet) | Working PWA with onboard/fund/transact | $12,000 |
-| Token Display + History | SEP-41 tokens, transaction history | $6,000 |
+| Reference Wallet v1 (Testnet) | Deployed to Vercel, passkey onboarding | $12,000 |
+| Token Display + Transaction History | SEP-41 tokens, tx history visible | $6,000 |
 | Python SDK Bindings | PyPI package published | $7,000 |
-| Onboarding Standards Doc v1 | Developer guide + integration patterns | $5,000 |
-| SEP Draft | Submitted to stellar/stellar-protocol | $4,000 |
-| Ecosystem Wallet Feedback | 2+ wallet feedback sessions documented | $2,000 |
+| Onboarding Standards Documentation | Developer guide deployed | $5,000 |
+| SEP Draft (C-Address Discovery/Funding) | PR submitted to stellar/stellar-protocol | $4,000 |
+| Ecosystem Wallet Feedback | 2+ wallet teams documented | $2,000 |
 
-### Tranche 3: Mainnet Launch ($44,000)
+### Tranche 3: Mainnet Launch ($48,000)
 
 | Deliverable | Success Criteria | Budget |
 |-------------|------------------|--------|
-| Reference Wallet v2 (Mainnet) | Production deployment + proxy on mainnet | $12,000 |
-| G-to-C Funding Flows | CEX→proxy→C-address demo + on-ramp guide | $8,000 |
-| Integration Examples (3+) | Exchange, on-ramp guide, AI agent examples | $6,000 |
-| SDK v1.0 Stable | npm + PyPI stable releases | $4,000 |
-| Developer Portal | Complete docs site with search | $6,000 |
-| Multi-Wallet Sign-in | Metamask/Phantom integration (wishlist) | $4,000 |
-| Open Source + Handoff | MIT/Apache, contribution guide, runbook | $4,000 |
+| Reference Wallet v2 (Mainnet) | Production with Sentry + monitoring | $14,000 |
+| G-to-C Funding Flows + On-ramp Integration Guide | CEX→proxy→C-address demo on mainnet | $10,000 |
+| Integration Examples (3+) | Exchange, on-ramp, AI agent repos | $6,000 |
+| SDK v1.0 Stable | v1.0.0 on npm + PyPI | $4,000 |
+| Developer Portal + Final Documentation | Complete docs site with search | $6,000 |
+| Multi-Wallet Sign-in | Metamask/Phantom/Rabby integration | $4,000 |
+| Open Source + Community Handoff | MIT/Apache, CONTRIBUTING.md, runbook | $4,000 |
 
 **Note:** Security audit conducted via SCF-provided audit credits. Proxy contract and SDK undergo third-party review before mainnet.
 
@@ -338,7 +327,7 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 | "How does auto-forwarding work?" | Hybrid architecture: Horizon streaming detects payments, relayer submits forwards signed with contract-derived keys. Open source, self-hostable. |
 | "Freighter parity realistic?" | Scoped to token display + history + send/receive. Not a full dApp browser or hardware wallet. Reference implementation, not consumer wallet replacement. |
 | "Maintenance?" | 6-month post-launch support + community handoff + contribution guide |
-| "Why you?" | Completed SCF delivery ($108K, 100% on-time) + direct Smart Wallet experience building with passkeys and C-addresses |
+| "Why you?" | 1+ year C-address experience, SCF 37 on-time delivery, PasskeyKit contributor |
 
 ---
 

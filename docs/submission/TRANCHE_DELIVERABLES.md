@@ -5,29 +5,29 @@
 | Tranche | Focus | Deliverables | Budget | Timeline |
 |---------|-------|--------------|--------|----------|
 | #0 | Approval | — | $12,000 | Upon approval |
-| #1 | SDK Core + Proxy | 5 deliverables | $28,000 | 6 weeks |
+| #1 | SDK Core + Proxy | 5 deliverables | $24,000 | 6 weeks |
 | #2 | Wallet + Standards | 6 deliverables | $36,000 | 8 weeks |
-| #3 | Mainnet Launch | 7 deliverables | $44,000 | 8 weeks |
+| #3 | Mainnet Launch | 7 deliverables | $48,000 | 8 weeks |
 | **Total** | | **18 deliverables** | **$120,000** | **~5 months** |
 
 ---
 
-## Tranche 1: SDK Core + Proxy Infrastructure — $28,000
+## Tranche 1: SDK Core + Proxy Infrastructure — $24,000
 
 **[Deliverable 1.1] C-Address Funding SDK (TypeScript)**
 - Brief description: Core npm package enabling direct C-address funding without G-addresses. Includes transaction building, address validation, and fee estimation.
 - How to measure completion: Published on npm, can fund a C-address on testnet from any source (G-address, CEX withdrawal via proxy).
-- Budget: $8,000
+- Budget: $7,000
 
 **[Deliverable 1.2] C-Address Resolution & Discovery Module**
 - Brief description: Resolve C-addresses to underlying contract addresses. Lookup contract capabilities and supported assets.
 - How to measure completion: API documented, resolution working on testnet with <500ms latency.
-- Budget: $5,000
-
-**[Deliverable 1.3] PasskeyKit Integration Layer**
-- Brief description: SDK wrapper for PasskeyKit enabling seamless auth and signing flows. Smart Wallet compatibility.
-- How to measure completion: Integration tests passing, example script demonstrating passkey-based funding flow.
 - Budget: $4,000
+
+**[Deliverable 1.3] Smart Wallet Authentication Layer**
+- Brief description: SDK integration with Smart Wallet authentication (passkeys) enabling seamless auth and signing flows.
+- How to measure completion: Integration tests passing, example script demonstrating passkey-based funding flow.
+- Budget: $3,000
 
 **[Deliverable 1.4] Test Suite + CI/CD**
 - Brief description: Unit and integration tests with 80%+ coverage. GitHub Actions CI pipeline.
@@ -37,7 +37,7 @@
 **[Deliverable 1.5] G-to-C Proxy Contract + Relayer**
 - Brief description: Soroban smart contract for deterministic proxy G-address generation, plus open-source relayer service. Contract derives keypairs from `hash(c_address + salt)`. Relayer monitors proxy addresses via Horizon streaming API and submits forwarding transactions signed with contract-derived keys. Stateless, self-hostable architecture.
 - How to measure completion: Contract deployed on testnet, relayer running, can receive funds at proxy G-address and verify arrival at C-address within 30 seconds.
-- Budget: $8,000
+- Budget: $7,000
 
 **Tranche 1 Completion Date:** 6 weeks from approval
 
@@ -72,24 +72,24 @@
 
 **[Deliverable 2.6] Ecosystem Wallet Feedback**
 - Brief description: Structured feedback sessions with 2+ existing Stellar wallets (e.g., Lobstr, xBull, Freighter team) on SDK/standards.
-- How to measure completion: Documented feedback incorporated into standards doc.
+- How to measure completion: Written feedback from at least 2 wallet teams documented in public GitHub issue or discussion, with specific SDK/standards changes traceable to their input.
 - Budget: $2,000
 
 **Tranche 2 Completion Date:** 8 weeks after Tranche 1
 
 ---
 
-## Tranche 3: Mainnet Launch + Integrations — $44,000
+## Tranche 3: Mainnet Launch + Integrations — $48,000
 
 **[Deliverable 3.1] Reference Wallet v2 (Mainnet)**
 - Brief description: Production deployment with error tracking (Sentry), analytics, and uptime monitoring. Proxy contract deployed to mainnet.
 - How to measure completion: Live on mainnet, real transactions working, monitoring dashboard active.
-- Budget: $12,000
+- Budget: $14,000
 
 **[Deliverable 3.2] G-to-C Funding Flows + On-ramp Integration Guide**
 - Brief description: End-to-end documentation for funding C-addresses via CEX withdrawal and fiat on-ramps. Includes SEP-compliant integration patterns for on-ramp providers, webhook handling reference, and compliance considerations.
 - How to measure completion: Integration guide published, working demo of CEX withdrawal → proxy → C-address flow on mainnet.
-- Budget: $8,000
+- Budget: $10,000
 
 **[Deliverable 3.3] Integration Examples (3+)**
 - Brief description: Exchange integration, fiat on-ramp guide, AI agent funding examples with working code.
@@ -106,14 +106,14 @@
 - How to measure completion: Site deployed with search, all sections complete.
 - Budget: $6,000
 
-**[Deliverable 3.6] Multi-Wallet Sign-in (Wishlist)**
-- Brief description: Allow sign-in via Metamask/Phantom/Rabby, derive Stellar address, proceed through funding flow.
-- How to measure completion: At least one external wallet integration working in reference wallet.
+**[Deliverable 3.6] Multi-Wallet Sign-in**
+- Brief description: Allow sign-in via Metamask, Phantom, or Rabby wallet. Derive Stellar address from external wallet signature and proceed through C-address funding flow.
+- How to measure completion: At least one external wallet integration (Metamask, Phantom, or Rabby) working in reference wallet with documented integration guide.
 - Budget: $4,000
 
 **[Deliverable 3.7] Open Source + Community Handoff**
 - Brief description: All code open source (MIT/Apache), CONTRIBUTING.md, issue templates, maintenance runbook.
-- How to measure completion: Public repos with contribution guide, documented support channels.
+- How to measure completion: All repositories MIT/Apache licensed with LICENSE file, CONTRIBUTING.md merged, GitHub issue templates configured, and maintenance runbook published in docs. At least one external contribution (issue or PR) triaged.
 - Budget: $4,000
 
 **Tranche 3 Completion Date:** 8 weeks after Tranche 2 (Mainnet launch)

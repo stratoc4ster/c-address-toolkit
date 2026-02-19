@@ -1,8 +1,9 @@
-# Tranche 1: SDK Core
+# Tranche 1: SDK Core + Proxy
 
-**Budget:** $20,000
-**Focus:** MVP - Core SDK functionality
+**Budget:** $24,000
+**Focus:** MVP - Core SDK + G-to-C Proxy infrastructure
 **Duration:** ~6 weeks
+**Completion Date:** 15/11/2026
 
 ---
 
@@ -11,22 +12,22 @@
 | Role | Person | Allocation |
 |------|--------|------------|
 | Project Lead | Jose Toscano | Architecture, PasskeyKit, review |
-| SDK Developer | Contractor 1 | Implementation, tests |
+| Smart Contract & Backend | BlockchainOracle | Proxy contract, relayer, SDK |
 
 ---
 
 ## Deliverables
 
-### 1. C-Address Funding SDK (TypeScript)
+### 1. C-Address Funding SDK (TypeScript) — $7,000
 
-**Success Criteria:** npm package published, can fund C-address without G-address
+**Success Criteria:** Published on npm, can fund a C-address on testnet from any source
 
 | Task | Status | Notes |
 |------|--------|-------|
 | Package setup (tsconfig, eslint, etc.) | Not started | |
 | Core funding module | Not started | |
 | Transaction building | Not started | |
-| Error handling | Not started | |
+| Address validation + fee estimation | Not started | |
 | npm publish | Not started | |
 
 **Evidence Required:**
@@ -36,69 +37,77 @@
 
 ---
 
-### 2. C-Address Resolution Module
+### 2. C-Address Resolution & Discovery Module — $4,000
 
-**Success Criteria:** Resolve C-address → contract address
+**Success Criteria:** API documented, resolution working on testnet with <500ms latency
 
 | Task | Status | Notes |
 |------|--------|-------|
 | Resolution logic | Not started | |
 | Contract info lookup | Not started | |
-| Caching layer | Not started | |
+| Supported assets lookup | Not started | |
+| API documentation | Not started | |
 
 **Evidence Required:**
 - [ ] API documentation
-- [ ] Test showing resolution
+- [ ] Test showing resolution <500ms
 
 ---
 
-### 3. PasskeyKit Integration
+### 3. Smart Wallet Authentication Layer — $3,000
 
-**Success Criteria:** SDK works with existing passkey-kit
+**Success Criteria:** Integration tests passing, example script demonstrating passkey-based funding flow
 
 | Task | Status | Notes |
 |------|--------|-------|
 | PasskeyKit wrapper | Not started | |
 | Auth flow integration | Not started | |
 | Signing integration | Not started | |
+| Integration tests | Not started | |
 
 **Evidence Required:**
 - [ ] Integration example
-- [ ] Compatibility test
+- [ ] Passkey-based funding flow demo
 
 ---
 
-### 4. Unit Test Suite
+### 4. Test Suite + CI/CD — $3,000
 
-**Success Criteria:** 80%+ coverage
+**Success Criteria:** Coverage report, CI badge, all tests passing
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Test framework setup | Not started | |
+| Vitest framework setup | Not started | |
 | Funding tests | Not started | |
 | Resolution tests | Not started | |
 | Integration tests | Not started | |
-| CI pipeline | Not started | |
+| GitHub Actions CI pipeline | Not started | |
 
 **Evidence Required:**
 - [ ] Coverage report (80%+)
 - [ ] CI badge/link
+- [ ] All tests passing
 
 ---
 
-### 5. Basic Documentation
+### 5. G-to-C Proxy Contract + Relayer — $7,000
 
-**Success Criteria:** README + API reference
+**Success Criteria:** Contract deployed on testnet, relayer running, can receive funds at proxy G-address and verify arrival at C-address within 30 seconds
 
 | Task | Status | Notes |
 |------|--------|-------|
-| README with quickstart | Not started | |
-| API reference | Not started | |
-| Code examples | Not started | |
+| Proxy contract development (Soroban) | Not started | |
+| Deterministic keypair derivation | Not started | |
+| Relayer service (Horizon streaming) | Not started | |
+| Forwarding transaction logic | Not started | |
+| Testnet deployment | Not started | |
+| Docker setup for self-hosting | Not started | |
 
 **Evidence Required:**
-- [ ] README link
-- [ ] API docs link
+- [ ] Contract deployed on testnet
+- [ ] Relayer running and monitoring
+- [ ] Demo: funds at proxy G → arrive at C-address <30s
+- [ ] Open source repository
 
 ---
 
@@ -109,9 +118,10 @@ Before submitting Tranche 1 for review:
 - [ ] SDK installs via `npm install @stellar/c-address-sdk`
 - [ ] Can resolve a C-address on testnet
 - [ ] Can fund a C-address on testnet
-- [ ] All tests pass in CI
+- [ ] Proxy contract deployed on testnet
+- [ ] Relayer service running, forwarding works
+- [ ] All tests pass in CI (80%+ coverage)
 - [ ] Documentation reviewed by second person
-- [ ] Demo video recorded
 
 ---
 

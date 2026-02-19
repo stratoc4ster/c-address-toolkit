@@ -43,25 +43,30 @@ The C-Address Toolkit addresses a critical gap in Stellar's onboarding infrastru
 
 ## Budget
 
-**Total: $100,000** (SCF Build Award - RFP Track)
+**Total: $120,000** (SCF Build Award - RFP Track)
 
 | Tranche | Amount | Focus |
 |---------|--------|-------|
-| #0 | $10,000 | Kickoff |
-| #1 | $20,000 | SDK Core |
-| #2 | $30,000 | Wallet + Docs |
-| #3 | $40,000 | Mainnet Launch |
+| #0 | $12,000 | Kickoff |
+| #1 | $24,000 | SDK Core + Proxy |
+| #2 | $36,000 | Wallet + Standards |
+| #3 | $48,000 | Mainnet Launch |
 
 ---
 
 ## Team
 
 **Project Lead:** Jose Carlos Toscano
+- 1+ year experience building with Smart Wallets and C-addresses
+- SCF 37 awardee: CLI plugins for Soroban→MCP servers + Smart Wallet policy signer POC
 - PasskeyKit contributor
-- SCF 37 awardee (Stellar AI Agent Kit - $108K, fully delivered)
 - 5 Stellar hackathons, 3 wins
 
-**Contractors:** To be hired for SDK and frontend development
+**Contractors:**
+
+- **BlockchainOracle** (Telegram: @BlockchainOracle_dev) — Blockchain engineer with extensive Stellar and Soroban experience. Prior collaborator on SCF-funded projects with proven delivery record.
+
+- **Dan Garcia** ([LinkedIn](https://www.linkedin.com/in/chl03ks/)) — Product engineer specializing in seamless user experiences for complex blockchain interactions. Focus on making Web3 onboarding accessible to mainstream users.
 
 ---
 
@@ -72,8 +77,6 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 |----------|----------|----------|----------|----------|
 [  Tranche 1  ][    Tranche 2    ][     Tranche 3      ]
    SDK Core      Wallet + Docs       Mainnet Launch
-                                              ↓
-                                        Meridian 2025
 ```
 
 ---

@@ -25,7 +25,31 @@ Current Stellar tooling assumes G-addresses for funding flows. This creates a ga
 
 **Why Proxy?** CEXs and fiat on-ramps won't add native C-address support in the near term—it requires changes to their withdrawal systems, compliance flows, and address validation logic. The proxy approach enables C-address funding *today* without requiring any changes from external services. Users get a standard G-address they can share anywhere, while funds automatically arrive at their C-address. This is the pragmatic bridge that unlocks Smart Wallet adoption while the ecosystem matures.
 
-**G-to-C Proxy Contract + Relayer:** Soroban smart contract that generates deterministic proxy G-addresses for each C-address, plus an open-source relayer service that monitors and forwards funds. User requests proxy via SDK. Contract derives deterministic keypair from hash(c_address + salt), generating a standard G-address any CEX can send to. Relayer monitors proxy addresses via Horizon streaming API, constructs and submits forwarding transactions. Stateless, self-hostable, open source.
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         G-to-C Proxy Flow                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   CEX / On-ramp         Proxy G-Address           C-Address (Smart Wallet)
+│        │                      │                          │              │
+│        │   1. Withdraw        │                          │              │
+│        │─────────────────────▶│                          │              │
+│        │   (standard G-addr)  │                          │              │
+│        │                      │                          │              │
+│        │                      │  2. Relayer detects      │              │
+│        │                      │     (Horizon stream)     │              │
+│        │                      │                          │              │
+│        │                      │  3. Forward funds        │              │
+│        │                      │─────────────────────────▶│              │
+│        │                      │  (contract signs tx)     │              │
+│        │                      │                          │              │
+│   No changes needed     Deterministic            User receives funds    │
+│   to CEX/on-ramp        (no key storage)         in < 30 seconds        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**G-to-C Proxy Contract + Relayer:** Soroban smart contract that generates deterministic proxy G-addresses for each C-address, plus an open-source relayer service that monitors and forwards funds. User requests proxy via SDK. Contract derives deterministic keypair from hash(c_address + contract_secret_salt), generating a standard G-address any CEX can send to. Relayer monitors proxy addresses via Horizon streaming API, constructs and submits forwarding transactions. **Security:** Proxy keypairs are derived on-demand within the contract's execution context using a contract-controlled secret—no private keys are ever stored or exposed. The relayer submits unsigned transaction templates; signing occurs inside the contract. Destination is cryptographically locked to the original C-address. Stateless, self-hostable, open source.
 
 **C-Address Funding SDK (TypeScript + Python):** Core library enabling direct C-address funding. Includes proxy address generation, transaction building, address resolution, and Smart Wallet authentication integration. Published on npm and PyPI.
 
@@ -39,9 +63,11 @@ Current Stellar tooling assumes G-addresses for funding flows. This creates a ga
 
 ## Traction Evidence
 
-**Current SCF Awardee:** Active Build Award ($108K, SCF 37) with on-time tranche delivery. All development complete—Tranche 2 approved, Tranche 3 submitted. Only administrative closeout remains.
+**1+ Year C-Address Experience:** Building with Smart Wallets and C-addresses since their introduction. Firsthand experience with the funding gap this RFP addresses—struggled to enable external deposits, CEX withdrawals, and on-ramp flows to C-addresses. This proposal comes from real pain, not speculation.
 
-**Smart Wallet Experience:** Built Strooper Wallet at Stellar Hackathon 2024 (London)—a Telegram miniapp demonstrating passkey-based Smart Wallet onboarding when smart wallets were first introduced. Contributed to the official PasskeyKit repository.
+**Current SCF Awardee (SCF 37):** Delivered 2 CLI plugins that turn Soroban smart contracts into MCP servers, plus an initial POC for building policies through a CLI plugin for Smart Wallet policy signers—directly working with C-addresses. All tranches delivered on time.
+
+**Smart Wallet Experience:** Built Strooper Wallet at Meridian 2024 (London)—a Telegram miniapp demonstrating passkey-based Smart Wallet onboarding when smart wallets were first introduced. Contributed to the official PasskeyKit repository.
 
 **Hackathon Track Record:** 5 Stellar hackathons, 3 wins including Build Better on Stellar 2024 (EntryX) and 3rd place Build Better 2025 (Soroban to MCP).
 
@@ -135,7 +161,7 @@ Current Stellar tooling assumes G-addresses for funding flows. This creates a ga
 
 **[Deliverable 2.6] Ecosystem Wallet Feedback**
 - Brief description: Structured feedback sessions with 2+ existing Stellar wallets (e.g., Lobstr, xBull, Freighter team) on SDK/standards.
-- How to measure completion: Documented feedback incorporated into standards doc.
+- How to measure completion: Written feedback from at least 2 wallet teams documented in public GitHub issue or discussion, with specific SDK/standards changes traceable to their input.
 - Budget: $2,000
 
 ---
@@ -169,15 +195,37 @@ Current Stellar tooling assumes G-addresses for funding flows. This creates a ga
 - How to measure completion: Site deployed with search, all sections complete.
 - Budget: $6,000
 
-**[Deliverable 3.6] Multi-Wallet Sign-in (Wishlist)**
-- Brief description: Allow sign-in via Metamask/Phantom/Rabby, derive Stellar address, proceed through funding flow.
-- How to measure completion: At least one external wallet integration working in reference wallet.
+**[Deliverable 3.6] Multi-Wallet Sign-in**
+- Brief description: Allow sign-in via Metamask, Phantom, or Rabby wallet. Derive Stellar address from external wallet signature and proceed through C-address funding flow.
+- How to measure completion: At least one external wallet integration (Metamask, Phantom, or Rabby) working in reference wallet with documented integration guide.
 - Budget: $4,000
 
 **[Deliverable 3.7] Open Source + Community Handoff**
 - Brief description: All code open source (MIT/Apache), CONTRIBUTING.md, issue templates, maintenance runbook.
-- How to measure completion: Public repos with contribution guide, documented support channels.
+- How to measure completion: All repositories MIT/Apache licensed with LICENSE file, CONTRIBUTING.md merged, GitHub issue templates configured, and maintenance runbook published in docs. At least one external contribution (issue or PR) triaged.
 - Budget: $4,000
+
+---
+
+## Team
+
+**Jose Carlos Toscano** — Project Lead & Blockchain Engineer
+- Over 1 year hands-on experience building with Smart Wallets and C-addresses—directly encountered the funding gap this RFP addresses
+- Current SCF Build Award recipient (SCF 37) delivering CLI plugins that turn Soroban contracts into MCP servers, plus a policy-building POC for Smart Wallet policy signers using C-addresses
+- PasskeyKit contributor with direct Smart Wallet infrastructure experience
+- 5 Stellar hackathons, 3 wins including Build Better on Stellar 2024 (EntryX)
+- GitHub: [JoseCToscano](https://github.com/JoseCToscano)
+- Telegram: @josectoscano
+
+**BlockchainOracle** — Smart Contract & Backend Engineer
+- Blockchain engineer with extensive Stellar and Soroban development experience
+- Prior collaborator on SCF-funded projects with proven delivery record
+- Telegram: @BlockchainOracle_dev
+
+**Dan Garcia** — Product & UX Engineer
+- Product engineer specializing in seamless user experiences for complex blockchain interactions
+- Focus on making Web3 onboarding accessible to mainstream users
+- LinkedIn: [chl03ks](https://www.linkedin.com/in/chl03ks/)
 
 ---
 
