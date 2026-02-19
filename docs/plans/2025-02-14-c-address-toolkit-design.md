@@ -11,35 +11,34 @@
 
 **Project Name:** C-Address Toolkit: Direct Funding & Onboarding Infrastructure
 
-**One-liner:** A production-grade SDK, proxy contract, and reference wallet enabling direct C-address funding without traditional G-addresses, built by a passkey-kit contributor with proven Smart Wallet expertise.
+**One-liner:** A production-grade SDK, proxy contract, and reference wallet enabling direct C-address funding without traditional G-addresses, built by a team with proven Smart Wallet expertise.
 
 **Target RFP:** C-Address Tooling & Onboarding (Q1 2026)
 
 **Budget:** $120,000
 
-**Timeline:** 5 months, targeting Meridian 2025
+**Timeline:** 5 months
 
 ---
 
 ## Positioning
 
-### Why Me
+### Why Us
 
-I lead a software development company specializing in blockchain infrastructure and developer tooling. We handle multiple concurrent projects through a mix of employees, contractors, and freelancers. The Stellar AI Agent Kit is one of several active engagements - not a side project. Our delivery model is proven: for Tranche 2 alone, we shipped 37,000+ lines of production code across 4 merged PRs in under two weeks.
+We are a software development company specializing in blockchain infrastructure and developer tooling. Our team has the capacity to manage multiple projects concurrently, with a track record of on-time delivery on prior SCF engagements.
 
 ### Authority & Credentials
 
 | Evidence | Detail |
 |----------|--------|
-| PasskeyKit Contributor | Open source contribution to official repo |
-| Smart Wallet Pioneer | Strooper Wallet at HackMeridian 2024 |
+| Smart Wallet Experience | Strooper Wallet built at Stellar hackathon 2024 |
 | Current SCF Awardee | $108K AI Agent Kit (SCF 37) - fully delivered |
 | Hackathon Track Record | 5 hackathons, 3 wins, 1 third place |
-| Delivery Metrics | 37K+ lines, 4 PRs, ~2 weeks; 100% on-time |
+| PasskeyKit Contributor | Open source contribution to official repo |
 
 ### Key Narrative
 
-> "The C-address funding gap exists because current tooling assumes G-addresses. As a passkey-kit contributor building the Stellar AI Agent Kit's policy signer infrastructure, I've already solved adjacent problems. This project applies that expertise to create the missing onboarding layer—including a new proxy contract that bridges the G-address and C-address worlds."
+> "The C-address funding gap exists because current tooling assumes G-addresses. Through our work on the Stellar AI Agent Kit's policy signer infrastructure, we've already solved adjacent problems. This project applies that expertise to create the missing onboarding layer—including a new proxy contract that bridges the G-address and C-address worlds."
 
 ---
 
@@ -206,8 +205,6 @@ G-to-C Funding Flow:
 | Unit Test Suite | 80%+ coverage, CI pipeline | $3,000 |
 | **G-to-C Proxy Contract** | **Deployed on testnet, auto-forwards funds** | **$8,000** |
 
-**Team:** Jose (architecture, PasskeyKit, review) + Contractor 1 (SDK + contract)
-
 ### Tranche 2: Wallet + Docs ($36,000)
 
 | Deliverable | Success Criteria | Budget |
@@ -218,8 +215,6 @@ G-to-C Funding Flow:
 | Onboarding Standards Doc v1 | Developer guide + integration patterns | $5,000 |
 | SEP Draft | Submitted to stellar/stellar-protocol | $4,000 |
 | Ecosystem Wallet Feedback | 2+ wallet feedback sessions documented | $2,000 |
-
-**Team:** Jose (architecture, SEP, coordination) + Contractor 1 (Python) + Contractor 2 (frontend)
 
 ### Tranche 3: Mainnet Launch ($44,000)
 
@@ -233,8 +228,6 @@ G-to-C Funding Flow:
 | Multi-Wallet Sign-in | Metamask/Phantom integration (wishlist) | $4,000 |
 | Open Source + Handoff | MIT/Apache, contribution guide, runbook | $4,000 |
 
-**Team:** Jose (coordination, community, review) + Contractor 1 (SDK, examples) + Contractor 2 (wallet, infra)
-
 **Note:** Security audit conducted via SCF-provided audit credits. Proxy contract and SDK undergo third-party review before mainnet.
 
 ---
@@ -246,40 +239,7 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 |----------|----------|----------|----------|----------|
 [  Tranche 1  ][    Tranche 2    ][     Tranche 3      ]
  SDK + Proxy    Wallet + Docs       Mainnet Launch
-                                            ↓
-                                      Meridian 2025
 ```
-
----
-
-## Team Structure
-
-### Project Lead: Jose Carlos Toscano
-
-| Responsibility | Allocation |
-|----------------|------------|
-| Technical architecture & code review | 30% |
-| PasskeyKit/Smart Wallet integration | 20% |
-| Proxy contract design | 15% |
-| SDF coordination & SEP authorship | 20% |
-| Contractor management | 15% |
-
-### Contractor 1: SDK + Contract Developer
-
-- Strong TypeScript + Rust experience
-- Soroban smart contract development
-- Stellar SDK familiarity
-- Test-driven development
-- Scope: SDK core, proxy contract, Python bindings, integration examples
-- Budget: ~$45K across tranches
-
-### Contractor 2: Frontend Developer
-
-- React/Next.js production experience
-- Web3 wallet UX experience
-- PasskeyKit/WebAuthn familiarity
-- Scope: Reference wallet implementation
-- Budget: ~$30K across Tranches 2-3
 
 ---
 
@@ -287,22 +247,21 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 
 ### Unique Advantages
 
-1. **Software company owner** - Professional capacity, not a side project
-2. **Only passkey-kit contributor** applying for this RFP
-3. **Completed SCF delivery** - AI Agent Kit fully built, 100% on-time
-4. **New smart contract** - Proxy contract directly addresses RFP requirement
-5. **Proven contractor model** - 37K lines delivered in ~2 weeks
+1. **Professional capacity** - Software development company, not a side project
+2. **Completed SCF delivery** - AI Agent Kit fully built, 100% on-time
+3. **New smart contract** - Proxy contract directly addresses RFP requirement
+4. **Smart Wallet expertise** - Direct experience with PasskeyKit and C-address infrastructure
 
 ### Key Differentiators
 
 **Professional Capacity:**
-> "As the owner of a software development company, I bring professional project management, established contractor relationships, and proven delivery workflows. This isn't a learning exercise - it's our business."
+> "As a software development company, we bring professional project management and proven delivery workflows. This isn't a learning exercise—it's our business."
 
 **Smart Contract Deliverable:**
 > "The G-to-C Proxy Contract is the key innovation. It creates a bridge between the existing G-address world (CEXs, on-ramps, legacy wallets) and the new C-address world, making adoption frictionless."
 
 **AI Agent Integration (Unique Angle):**
-> "The integration examples will include AI agent funding flows - something no other applicant can credibly deliver, given my MCP toolkit work."
+> "The integration examples will include AI agent funding flows—something we can credibly deliver given our MCP toolkit work."
 
 ---
 
@@ -378,7 +337,7 @@ Month 1    Month 2    Month 3    Month 4    Month 5
 | "How does auto-forwarding work?" | Hybrid architecture: Horizon streaming detects payments, relayer submits forwards signed with contract-derived keys. Open source, self-hostable. |
 | "Freighter parity realistic?" | Scoped to token display + history + send/receive. Not a full dApp browser or hardware wallet. Reference implementation, not consumer wallet replacement. |
 | "Maintenance?" | 6-month post-launch support + community handoff + contribution guide |
-| "Why you?" | Only passkey-kit contributor + completed SCF delivery ($108K, 100% on-time) + direct Smart Wallet experience |
+| "Why you?" | Completed SCF delivery ($108K, 100% on-time) + direct Smart Wallet experience + PasskeyKit contributor |
 
 ---
 
